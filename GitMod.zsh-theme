@@ -10,10 +10,10 @@
   # dependencies to update.  You can set the option to false to disable the command hooks, however 
   # this will also automatically disable the dependency function.
 MOD_OPTION_OVERRIDE_ALIASES=true
-  # This option should contain the path to Stephen Bush's 'configWriter.sh', which is a tool used
+  # This option should contain the path to Stephen Bush's 'ConfigWriter.sh', which is a tool used
   # for creating and using custom config files.  This is required by the mod to improve performance, 
   # enabling concurrency of operations and memoization of computed results.
-MOD_OPTION_SOURCE_OF_CONFIGWRITER=$(scriptPath $0)"/configWriter.sh"
+MOD_OPTION_SOURCE_OF_CONFIGWRITER=$(scriptPath $0)"/ConfigWriter.sh"
 
 
 PROMPT='%{$fg[cyan]%}$(addSpace)Working in %{$reset_color%}%{$fg_bold[white]%}$(_getPwd)%b%{$reset_color%}$(getDeps)
