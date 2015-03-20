@@ -5,23 +5,23 @@ My Shell Script repository
 
 Oh-My-ZSH Themes:
 ======================
-### GitMod.zsh-theme
+#### GitMod.zsh-theme
 
 
 Standalone Modules:
 ======================
-### BSRebuild.sh
+#### BSRebuild.sh
 
-### ConfigWriter.sh
+#### ConfigWriter.sh
 
-### VirtualEnvHandler.sh
+#### VirtualEnvHandler.sh
 
 
 Random Aliases/Functions:
 ======================
-### GitFunctions.sh
+#### GitFunctions.sh
 
-### GeneralFunctions.sh
+#### GeneralFunctions.sh
 
-### HyperTextStockShellAliases.sh
+#### HyperTextStockShellAliases.sh
 
