@@ -160,7 +160,8 @@ if [[ $VENVAR__Override_CD_Alias == true ]]; then
   fi
 fi
 
-function testCd() {
-  cd ..
-  echo $?
+function makeVenvFile() {
+  local File=".venv"
+  touch $File
+  echo "$1" | tee -a $File
 }
