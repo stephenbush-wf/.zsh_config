@@ -1,9 +1,15 @@
 #!/bin/sh
 # Written by Stephen Bush, Workiva (HyperText)
 
+# ==============================================================================
+# Utility functions
+
+# Return the path where the calling script lives.  Requires argument '$0' and
+#  only works during initial sourcing of the script, so if this path is needed 
+#  later, then it should be grabbed and saved by the calling script.
 function scriptPath () {
-    local DIR="`dirname \"$1\"`"              # relative
-    local DIR2="`( builtin cd \"$DIR\" && pwd )`"  # absolutized and normalized
+    local DIR="`dirname \"$1\"`" # relative
+    local DIR2="`( builtin cd \"$DIR\" && pwd )`" # absolutized and normalized
     if [ -z "$DIR2" ] ; then
         echo $DIR
         return 0
@@ -22,10 +28,35 @@ function getBaseDir() {
   return 0
 }
 
+# Show/Hide hidden files and folders in the Finder
+alias finderShowHiddenFiles="defaults write com.apple.finder AppleShowAllFiles YES"
+alias finderHideHiddenFiles="defaults write com.apple.finder AppleShowAllFiles NO"
+
+# Host a local file server available over the wifi for sharing/moving files
+alias serveFiles="
+  ifconfig | grep netmask &&
+  echo 'Running file server on port 5000' &&
+  python -m SimpleHTTPServer 5000
+"
+
+# Pause the currently running program until the user pushes Enter.
+function pause() {
+    echo "***************************************************"
+    echo "** $*"
+    echo "** Press ENTER to continue, Ctrl-C to quit."
+    echo "***************************************************"
+    read -e ""
+}
+
+# Create an easy detailed 'ls' alias
+alias l="ls -1 -lah"
+
+
+
+
 
 # ==============================================================================
 # ZSH Extensions
-# Developped by Stephen Bush, Workiva LLC (HyperText)
 
 function changeTheme() {
   ZSH_THEME=${1?"robbyrussell"}
@@ -38,9 +69,10 @@ function loadZSH() {
 
 
 
+
 # ==============================================================================
-# Alias Management -- Provides a framework for safely "Hooking" into aliases, for makeshift event handling
-# Developped by Stephen Bush, Workiva LLC (HyperText)
+# Alias Management -- Provides a framework for safely "Hooking" into aliases, 
+#   for makeshift event handling
 
 function _createBaseAliasNew () {
   # {
@@ -107,4 +139,57 @@ function prependAlias () {
     _wrapAlias $1
   } &> /dev/null
 }
+
+
+
+
+
 # ==============================================================================
+# Docker Functions -- 
+
+dockerReboot () {
+  # # VBoxManage list
+  # # VBoxManage showvminfo boot2docker-vm
+  # # boot2docker stop
+  # # VBoxManage controlvm boot2docker-vm poweroff
+  # # VBoxManage unregistervm boot2docker-vm --delete
+  # # rm -rf ~/VirtualBox\ VMs/boot2docker-vm/
+  # boot2docker init
+
+  (port=49444;VBoxManage modifyvm "boot2docker-vm" --natpf1 "tcp-port${port},tcp,,${port},,${port}")
+
+  boot2docker up
+
+  export DOCKER_HOST=tcp://192.168.59.103:2376
+  export DOCKER_CERT_PATH=/Users/stephenbush/.boot2docker/certs/boot2docker-vm
+  export DOCKER_TLS_VERIFY=1
+
+  docker login docker.webfilings.org --username="stephenbush-wf" --password="d60d1deb7b" --email="stephen.bush@workiva.com"
+  # Use --insecure-registry ??
+
+  dockerUpdate $1 $2
+}
+
+dockerUpdate() {
+  local imageToLoad="latest" # Default
+  if [[ $1 != "" ]]; then
+    imageToLoad="$1"
+  fi
+
+  local image2ToLoad="latest" # Default
+  if [[ $2 != "" ]]; then
+    image2ToLoad="$2"
+  fi
+
+  # Run the NVS Task Manager
+  docker stop nvs-task-manager
+  docker rm nvs-task-manager
+  docker pull docker.webfilings.org/hydra/nvs-task-manager:"$imageToLoad"
+  docker run -t -d -p 49444:49444 --name nvs-task-manager -e "DEMETER_CONF=-l DEBUG" docker.webfilings.org/hydra/nvs-task-manager:"$imageToLoad"
+
+  # Run the NVS Worker
+  docker stop nvs-worker
+  docker rm nvs-worker
+  docker pull docker.webfilings.org/hydra/nvs-worker:"$image2ToLoad"
+  docker run -d --name nvs-worker --link nvs-task-manager:nvs-task-manager -e "DEMETER_CONF=-l DEBUG" docker.webfilings.org/hydra/nvs-worker:"$image2ToLoad"
+}
