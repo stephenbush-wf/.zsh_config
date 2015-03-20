@@ -1,12 +1,15 @@
-# .zsh_config
+.zsh_config
+======================
 My Shell Script repository
 
 
-## Oh-My-ZSH Themes:
+Oh-My-ZSH Themes:
+======================
 ### GitMod.zsh-theme
 
 
-## Standalone Modules:
+Standalone Modules:
+======================
 ### BSRebuild.sh
 
 ### ConfigWriter.sh
@@ -14,7 +17,8 @@ My Shell Script repository
 ### VirtualEnvHandler.sh
 
 
-## Random Aliases/Functions:
+Random Aliases/Functions:
+======================
 ### GitFunctions.sh
 
 ### GeneralFunctions.sh
