@@ -1,6 +1,6 @@
 #!/bin/sh
 # Written by Stephen Bush, Workiva (HyperText)
-# Initial code sourced from Stack Overflow, and heavily modified.
+# Initial code sourced from Stack Overflow, and heavily modified/expanded.
 # http://stackoverflow.com/questions/2464760/modify-config-file-using-bash-script/26035652#26035652
 
 # INITIALIZE CONFIG IF IT'S MISSING
@@ -12,44 +12,9 @@ if [ ! -e "${CONFIG_FILE}" ] ; then
     } &> /dev/null
 fi
 
-
-function set_config(){
-    # echo "Set Config for $1 == $2 >> $CONFIG_FILE" >&2 # Debugging
-    {
-		sed -i "" "s/^\($1\s*=\s*\).*\$/\1\"$2\"/" $CONFIG_FILE
-    } &> /dev/null
-}
-
-function add_config() {
-    # echo "Set Config for $1 == $2 >> $CONFIG_FILE" >&2 # Debugging
-    {
-		local Value
-		if [[ $2 != "" ]]; then
-			Value=$2
-		else
-			Value=""
-		fi
-		echo "$1=\"$Value\"" | tee -a $CONFIG_FILE
-    } &> /dev/null
-}
-
-function reset_config() {
-    {
-		rm -rf $CONFIG_FILE
-	    # Set default variable value
-	    touch $CONFIG_FILE
-    	echo "CONFIG_FILE=$CONFIG_FILE" | tee -a $CONFIG_FILE
-    } &> /dev/null
-}
-
-
-function load_config() {
-	{
-		source $CONFIG_FILE
-    } &> /dev/null
-}
-
 function config() {
+
+  # echo "-- " ${@} # Debugging
 
   # Helper function for removing instances of text $2 from original text $1 
   function stripString() {
@@ -68,35 +33,45 @@ function config() {
     echo ""
     echo "  $fg[cyan] Usage:"
     echo ""
-    echo "     $reset_color bsRebuild [options]"
+    echo "     $reset_color config [commands|options]"
+    echo ""
+    echo ""
+    echo "  $fg[cyan] Commands:"
+    echo ""
+    echo "     $fg[cyan] help"
+    echo "        $reset_color Shows this help dialog."
+    echo ""
+    echo "     $fg[cyan] add"
+    echo "        $reset_color Add a key to the config file.  Requires -k option, -v optional."
+    echo ""
+    echo "     $fg[cyan] set"
+    echo "        $reset_color Set a key to a specified value.  Requires -k and -v options."
+    echo ""
+    echo "     $fg[cyan] load"
+    echo "        $reset_color Load keys/values into the current environment. Optionally, the -k flag"
+    echo "       can be used to specify a specific key to load, else all values are loaded"
+    echo ""
+    echo "     $fg[cyan] reset"
+    echo "        $reset_color Remove and re-create the Config file."
     echo ""
     echo ""
     echo "  $fg[cyan] Options:"
     echo ""
-    echo "     $fg[cyan] help, --help, -h"
-    echo "        $reset_color Shows this help dialog"
+    echo "     $fg[cyan] --help, -h"
+    echo "        $reset_color Shows this help dialog."
     echo ""
-    echo "     $fg[cyan] -f"
-    echo "        $reset_color Runs in full rebuild mode.  When this flag is set, in addition to all"
-    echo "       of the other build steps, the script will also completely remove and"
-    echo "       re-clone BigSky from the remote repository, and perform additional steps."
-    echo "       This can usually fix rare problems related to a corrupted or extremely"
-    echo "       outdated file structure."
+    echo "     $fg[cyan] -c"
+    echo "        $reset_color Specify a target config file."
     echo ""
-    echo "     $fg[cyan] -b <origin> <branch>"
-    echo "        $reset_color When this flag is set, the specified remote branch is checked out and"
-    echo "       used instead of master prior to running the rebuild steps."
+    echo "     $fg[cyan] -k"
+    echo "        $reset_color Specify a key in the config file."
     echo ""
-    echo "     $fg[cyan] -s"
-    echo "        $reset_color Skips many of the hefty rebuild steps (including ant full) and only"
-    echo "       performs update/link steps.  This can often fix minor dependency and/or "
-    echo "       linking issues that dont require a full rebuild."
-    echo ""
-    echo "     $fg[cyan] -l"
-    echo "        $reset_color Skips almost all of the build steps and only links in external repos."
-    echo ""
-    echo "     $fg[cyan] -L"
-    echo "        $reset_color Skips the link step."
+    echo "     $fg[cyan] -v"
+    echo "        $reset_color Specify a value in the config file."
+    echo "       NOTE: The empty string \"\" is considered a legal value for this option."
+    echo "       Because of this, the -v option should be specified LAST in any 'config'"
+    echo "       command, to avoid the script accidently parsing other parameters as values"
+    echo "       in the case where an expression resolves to the empty string."
     echo ""
     return 0
   fi
@@ -168,14 +143,15 @@ function config() {
       # Parse extra param for config file
       CurParamNum=$(($CurParamNum+1))
       eval "VarConfigValue=\$$CurParamNum"
-      if [[ $VarConfigValue == "" || $VarConfigValue =~ '^-.*' ]] then
-        echo "$fg[red]ERROR: This command requires at least one argument following the -v parameter!  See 'config --help' for more details.$reset_color"
-        return 11
-      fi
+      # Disable the validity check, because string could be legally empty
+      # if [[ ! ( -n $VarConfigValue ) || $VarConfigValue =~ '^-.*' ]] then
+      #  echo "$fg[red]ERROR: This command requires at least one argument following the -v parameter!  See 'config --help' for more details.$reset_color"
+      #  return 11
+      #fi
     fi
 
     if [[ $CurParam =~ '^-.*h.*' || $CurParam =~ '^-.*help.*' || $CurParam =~ '^help' ]]; then
-      bsRebuild help
+      config help
       return 0
     fi
 
@@ -199,8 +175,8 @@ function config() {
   fi
 
   if [[ $CommandAdd == true ]]; then
-    if [[ $VarConfigKey == "" || $VarConfigValue == "" ]]; then
-        echo "$fg[red]ERROR: The 'add' command requires at least two arguments set, -k -v!  See 'config --help' for more details.$reset_color"      
+    if [[ $VarConfigKey == "" ]]; then
+        echo "$fg[red]ERROR: The 'add' command requires at least one argument set, -k!  See 'config --help' for more details.$reset_color"      
         return 11
     fi
     {
@@ -216,8 +192,8 @@ function config() {
 
   if [[ $CommandSet == true ]]; then
     # echo "Set Config for $VarConfigKey == $VarConfigValue >> $VarConfigFile" >&2 # Debugging
-    if [[ $VarConfigKey == "" || $VarConfigValue == "" ]]; then
-        echo "$fg[red]ERROR: The 'add' command requires at least two arguments set, -k -v!  See 'config --help' for more details.$reset_color"      
+    if [[ $VarConfigKey == "" ]]; then
+        echo "$fg[red]ERROR: The 'set' command requires at least two arguments set, -k -v!  See 'config --help' for more details.$reset_color"      
         return 11
     fi
     {
@@ -227,7 +203,13 @@ function config() {
 
   if [[ $CommandLoad == true ]]; then
 	{
-		source $VarConfigFile
+		if [[ $VarConfigKey != "" ]]; then
+  			cat $VarConfigFile | grep "${VarConfigKey}=" | while read -r line ; do
+  				eval $line
+  			done
+  		else
+  			source $VarConfigFile
+		fi
     } &> /dev/null
   fi
 

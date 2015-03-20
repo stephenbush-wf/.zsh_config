@@ -12,7 +12,7 @@
 MOD_OPTION_OVERRIDE_ALIASES=true
   # This option should contain the path to Stephen Bush's 'configWriter.sh', which is a tool used
   # for creating and using custom config files.  This is required by the mod to improve performance, 
-  # enabling concurrency of operations and memoization of results.
+  # enabling concurrency of operations and memoization of computed results.
 MOD_OPTION_SOURCE_OF_CONFIGWRITER=$(scriptPath $0)"/configWriter.sh"
 
 
@@ -78,11 +78,11 @@ function rvm_gemset() {
 # Determine the time since last commit. If branch is clean,
 # use a neutral color, otherwise colors will vary according to time.
 function git_time_since_commit() {
-    load_config
+    config load -k repoHasCommit -c "$GITMOD_CONFIG_FILE"
     if [[ $repoHasCommit != $(getBaseDir $(git rev-parse --show-toplevel > /dev/null 2>&1)) ]]; then
         if git rev-parse --git-dir > /dev/null 2>&1; then
             if [[ $(git log 2>&1 > /dev/null | grep -c "^fatal: bad default revision") == 0 ]]; then
-                set_config repoHasCommit $(getBaseDir $(git rev-parse --show-toplevel))
+                config set -kv repoHasCommit $(getBaseDir $(git rev-parse --show-toplevel)) -c "$GITMOD_CONFIG_FILE"
                 repoHasCommit=""
             else
                 # No commits
@@ -164,14 +164,14 @@ getDeps () {
       ifBuildingDependencyList || break
       sleep 0.05
     done
-    load_config
+    config load -k localD -c "$GITMOD_CONFIG_FILE"
     if [[ $localD != "" ]]; then
         echo "%{$fg[cyan]%} with %{$reset_color%}"$localD
     fi
 }
 
 function ifBuildingDependencyList () {
-  load_config 
+  config load -k localD -c "$GITMOD_CONFIG_FILE"
   if [[ $localD == "Generating..." ]]; then
     return 0
   else
@@ -181,7 +181,7 @@ function ifBuildingDependencyList () {
 
 buildDependencyList () {
     local RetStr=""
-    set_config localD "Generating..."
+    config set -kv localD "Generating..." -c "$GITMOD_CONFIG_FILE"
     RetStr+=$(testBower)
     temp=$(testPip)
     if [[ $RetStr != "" && $temp != "" ]]; then
@@ -189,7 +189,7 @@ buildDependencyList () {
     fi
     RetStr+=$temp
     localD=$RetStr
-    set_config localD $RetStr
+    config set -c "$GITMOD_CONFIG_FILE" -kv localD $RetStr
 }
 
 testBower () {
@@ -245,11 +245,11 @@ function theme_updatePWD () {
 
 # ========== Set up the Config Writer ==========
 if [[ $MOD_OPTION_SOURCE_OF_CONFIGWRITER != false ]]; then
-    CONFIG_FILE=$(scriptPath $0)"/.GitModTheme-""${TTY##*/}"".cfg"
+    GITMOD_CONFIG_FILE=$(scriptPath $0)"/.GitModTheme-""${TTY##*/}"".cfg"
     source $MOD_OPTION_SOURCE_OF_CONFIGWRITER
-    reset_config
-    add_config repoHasCommit "false"
-    add_config localD
+    config reset -c "$GITMOD_CONFIG_FILE"
+    config add -kv repoHasCommit "false" -c "$GITMOD_CONFIG_FILE"
+    config add -k localD -c "$GITMOD_CONFIG_FILE"
     theme_updateDeps
 else
     localD=""
