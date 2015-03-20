@@ -12,7 +12,6 @@ function scriptPath () {
     return 0
 }
 
-
 # This helper function gets the base directory name from the PWD
 function getBaseDir() {
   if [[ ${@:1} == "" ]]; then
@@ -92,39 +91,6 @@ function _wrapAlias () {
   alias $1="function Alias_Function_Wrapper () { ""$(eval echo \$$1"_BaseAliasContent")"" }; Alias_Function_Wrapper"
 }
 
-
-# -- Deprecated
-function prependAliasSimple () {
-  {
-    alias $1
-    if [[ $? -gt 0 ]]; then
-      # No alias exists
-      alias $1="$2""; ""\\$1"
-    else
-      local TEMP_PREPEND=$(eval echo \$$1)""
-      eval $(alias $1 | sed -e 's:\\:\\\\:g')
-      alias $1="$2""; ""$(eval echo \$$1)"
-      eval "$1""=""$TEMP_PREPEND"
-    fi
-  } &> /dev/null
-}
-
-
-# -- Deprecated
-function appendAliasSimple () {
-  {
-    alias $1
-    if [[ $? -gt 0 ]]; then
-      # No alias exists
-      alias $1="$2""; ""\\$1"
-    else
-      local TEMP_PREPEND=$(eval echo \$$1)""
-      eval $(alias $1 | sed -e 's:\\:\\\\:g')
-      alias $1="$(eval echo \$$1)""; ""$2"
-      eval "$1""=""$TEMP_PREPEND"
-    fi
-  } &> /dev/null
-}
 
 function appendAlias () {
   {
