@@ -24,9 +24,9 @@ Repository Contents:
 #### <a name="ConfigWriter.sh"></a>ConfigWriter.sh
 
 #### <a name="VirtualEnvHandler.sh"></a>VirtualEnvHandler.sh
-This module gives you several useful functions as well as improved usability around Virtual Environment handling, including automatic VEnv detection in any directory (even nested subdirectories), *without* restrictions such as the need for a hidden `.venv` file or the VEnv to be named after the directory. (However, these popular optimizations are also incorporated to improve detection performance.)  It also features automatic activation/deactivation of these environments via the cd command
+This module gives you several useful functions as well as improved usability around Virtual Environment handling, including automatic VEnv detection in any directory (even nested subdirectories), *without* restrictions such as the need for a hidden `.venv` file or the VEnv to be named after the directory. (However, these popular optimizations are also incorporated to improve detection performance.)  It also features automatic activation/deactivation of these environments via the cd command.
 
-**Note:** This script optionally uses functions Stephen Bush's 'GeneralFunctions.sh' to improve performance and interoperability with other scripts.  However, if the desired functions are not available, alternatives are used instead to preserve functionality and supress errors.
+**Note:** This script optionally uses functions from 'GeneralFunctions.sh' to improve performance and interoperability with other scripts.  However, if the desired functions are not available, alternatives are used instead to preserve functionality and supress errors.
 
 
 **check_virtualenv \<directory\>** -- This function returns the name of the VEnv for the specified directory, or for the current PWD if none specified.
