@@ -1,18 +1,18 @@
 Repository Contents:
 ======================
-- [Oh-My-ZSH Themes](#VirtualEnvHandler.sh)
-  - [GitMod.zsh-theme](#GitMod.zsh-theme)
-- [Standalone Modules](#Standalone Modules)
-  - [BSRebuild.sh](#BSRebuild.sh)
-  - [ConfigWriter.sh](#ConfigWriter.sh)
+- [Oh-My-ZSH Themes](#oh-my-zsh-themes)
+  - [GitMod.zsh-theme](#gitmodzsh-theme)
+- [Standalone Modules](#)
+  - [BSRebuild.sh](#bsrebuildsh)
+  - [ConfigWriter.sh](#configwritersh)
   - [OnLoad.sh](#onloadsh)
-  - [VirtualEnvHandler.sh](#VirtualEnvHandler.sh)
-- [Random Aliases/Functions](#Random Aliases/Functions)
-  - [GitFunctions.sh](#GitFunctions.sh)
-  - [GeneralFunctions.sh](#GeneralFunctions.sh)
-  - [HyperTextStockShellAliases.sh](#HyperTextStockShellAliases.sh)
+  - [VirtualEnvHandler.sh](#virtualenvhandlersh)
+- [Random Aliases/Functions](#randomaliasesfunctions)
+  - [GitFunctions.sh](#gitfunctionssh)
+  - [GeneralFunctions.sh](#generalfunctionssh)
+  - [HyperTextStockShellAliases.sh](#hypertextstockshellaliasessh)
 
-<a name="Oh-My-ZSH Themes"></a>Oh-My-ZSH Themes:
+Oh-My-ZSH Themes:
 ======================
 #### GitMod.zsh-theme
 
