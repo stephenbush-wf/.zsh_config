@@ -7,7 +7,7 @@ Repository Contents:
   - [ConfigWriter.sh](#configwritersh)
   - [OnLoad.sh](#onloadsh)
   - [VirtualEnvHandler.sh](#virtualenvhandlersh)
-- [Random Aliases/Functions](#randomaliasesfunctions)
+- [Random Aliases/Functions](#random-aliasesfunctions)
   - [GitFunctions.sh](#gitfunctionssh)
   - [GeneralFunctions.sh](#generalfunctionssh)
   - [HyperTextStockShellAliases.sh](#hypertextstockshellaliasessh)
