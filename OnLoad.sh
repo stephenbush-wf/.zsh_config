@@ -1,7 +1,13 @@
 #!/bin/sh
-# Written by Stephen Bush, Workiva (HyperText)
+# ==============================================================================
+# Terminal Variable
+#   Written by Stephen Bush, Workiva (HyperText)
+#
+# Define and save commands unique to individual terminal IDs, to be run when 
+#   called at the appropriate time.  Allows for a single command to cause
+#   different
 
-ONLOAD_CONFIG_FILE=$PWD"/.ONLOAD_CONFIG_FILE.cfg"
+ONLOAD_CONFIG_FILE=$PWD"/.TERM_VARS.cfg"
 
 which -s prependAlias &> /dev/null
 if [[ $? != 0 ]]; then
@@ -16,7 +22,7 @@ if [[ ! ( -e $ONLOAD_CONFIG_FILE ) ]]; then
 	config -c $ONLOAD_CONFIG_FILE add -k $itemToLoad
 fi
 
-function setLoadCommand() {
+function setTerminalVariable() {
 	local itemToLoad=$(echo "$TTY" | sed -e 's:/::g')"_""$1"
 	eval "$itemToLoad""=""Empty"
 	config -c $ONLOAD_CONFIG_FILE load -k $itemToLoad
@@ -27,9 +33,9 @@ function setLoadCommand() {
 	fi
 }
 
-function onLoad() {
+function getTerminalVariable() {
 	local itemToLoad=$(echo "$TTY" | sed -e 's:/::g')"_""$1"
 	# echo "Loading $itemToLoad"
 	config -c $ONLOAD_CONFIG_FILE load -k $itemToLoad
-	eval $(eval echo \$$itemToLoad)
+	eval echo \$$itemToLoad
 }
