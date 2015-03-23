@@ -11,6 +11,8 @@ Repository Contents:
   - [GitFunctions.sh](#gitfunctionssh)
   - [GeneralFunctions.sh](#generalfunctionssh)
   - [HyperTextStockShellAliases.sh](#hypertextstockshellaliasessh)
+  
+**Note:** Some of the documentation for these scripts is still spotty, but i've tried to design them to be as easy to integrate as possible.  Ping me on HipChat for help setting up any of these scripts.
 
 Oh-My-ZSH Themes:
 ======================
