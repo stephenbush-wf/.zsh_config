@@ -7,7 +7,7 @@
 #   called at the appropriate time.  Allows for a single command to cause
 #   different
 
-ONLOAD_CONFIG_FILE=$PWD"/.TERM_VARS.cfg"
+TVAR_CONFIG_FILE=$PWD"/.TERM_VARS.cfg"
 
 which -s prependAlias &> /dev/null
 if [[ $? != 0 ]]; then
@@ -16,26 +16,26 @@ if [[ $? != 0 ]]; then
 fi
 
 
-if [[ ! ( -e $ONLOAD_CONFIG_FILE ) ]]; then
-	config -c $ONLOAD_CONFIG_FILE reset
+if [[ ! ( -e $TVAR_CONFIG_FILE ) ]]; then
+	config -c $TVAR_CONFIG_FILE reset
 	local itemToLoad=$(echo "$TTY""_onLoad" | sed -e 's:/::g')
-	config -c $ONLOAD_CONFIG_FILE add -k $itemToLoad
+	config -c $TVAR_CONFIG_FILE add -k $itemToLoad
 fi
 
 function setTerminalVariable() {
 	local itemToLoad=$(echo "$TTY" | sed -e 's:/::g')"_""$1"
 	eval "$itemToLoad""=""Empty"
-	config -c $ONLOAD_CONFIG_FILE load -k $itemToLoad
+	config -c $TVAR_CONFIG_FILE load -k $itemToLoad
 	if [[ $(eval echo \$$itemToLoad) == "Empty" ]]; then
-		config -c $ONLOAD_CONFIG_FILE add -kv $itemToLoad $2
+		config -c $TVAR_CONFIG_FILE add -kv $itemToLoad $2
 	else 
-		config -c $ONLOAD_CONFIG_FILE set -kv $itemToLoad $2
+		config -c $TVAR_CONFIG_FILE set -kv $itemToLoad $2
 	fi
 }
 
 function getTerminalVariable() {
 	local itemToLoad=$(echo "$TTY" | sed -e 's:/::g')"_""$1"
 	# echo "Loading $itemToLoad"
-	config -c $ONLOAD_CONFIG_FILE load -k $itemToLoad
+	config -c $TVAR_CONFIG_FILE load -k $itemToLoad
 	eval echo \$$itemToLoad
 }
