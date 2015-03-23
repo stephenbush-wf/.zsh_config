@@ -51,6 +51,9 @@ function pause() {
 # Create an easy detailed 'ls' alias
 alias l="ls -1 -lah"
 
+alias runPassageway="/Applications/runscope-passageway --bucket=4k0snp2zbost --fixed 8001"
+
+
 
 
 

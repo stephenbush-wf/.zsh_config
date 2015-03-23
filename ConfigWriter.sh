@@ -3,15 +3,6 @@
 # Initial code sourced from Stack Overflow, and heavily modified/expanded.
 # http://stackoverflow.com/questions/2464760/modify-config-file-using-bash-script/26035652#26035652
 
-# INITIALIZE CONFIG IF IT'S MISSING
-if [ ! -e "${CONFIG_FILE}" ] ; then
-    {
-	    # Set default variable value
-	    touch $CONFIG_FILE
-    	echo "CONFIG_FILE=$CONFIG_FILE" | tee -a $CONFIG_FILE
-    } &> /dev/null
-fi
-
 function config() {
 
   # echo "-- " ${@} # Debugging
@@ -27,8 +18,17 @@ function config() {
   # Help output  
   if [[ $1 == "help" ]]; then
     echo "$fg[cyan]================================================================================"
-    echo "Config-Manager"
+    echo "Configuration-File Manager"
     echo "   written by Stephen Bush (Workiva)"
+    echo ""
+    echo ""
+    echo "  The purpose of this Script is to make management of one or more configuration"
+    echo "files as simple, clean and performant as possible while providing a simple"
+    echo "interface for interacting with them."
+    echo "  Configuration files can have many uses, including but not limited to:"
+    echo "    -- Providing an interface for programmatically changing variables which can"
+    echo "         persist beyond closing and re-opening a terminal"
+    echo "    -- Providing external channels for cross-thread communication"
     echo "================================================================================"
     echo ""
     echo "  $fg[cyan] Usage:"
@@ -166,12 +166,10 @@ function config() {
   fi
 
   if [[ $CommandReset == true ]]; then
-    {
 		rm -rf $VarConfigFile
-	    # Set default variable value
-	    touch $VarConfigFile
-    	echo "# CONFIG_FILE=$VarConfigFile" | tee -a $VarConfigFile
-    } &> /dev/null
+	  # Set default variable value
+	  touch $VarConfigFile
+    echo "# CONFIG_FILE=$VarConfigFile" | tee -a $VarConfigFile &> /dev/null
   fi
 
   if [[ $CommandAdd == true ]]; then
@@ -197,7 +195,7 @@ function config() {
         return 11
     fi
     {
-		sed -i "" "s/^\($VarConfigKey\s*=\s*\).*\$/\1\"$VarConfigValue\"/" $VarConfigFile
+		  sed -i "" "s:^\($VarConfigKey\s*=\s*\).*\$:\1\"$VarConfigValue\":" $VarConfigFile
     } &> /dev/null
   fi
 
@@ -212,6 +210,4 @@ function config() {
 		fi
     } &> /dev/null
   fi
-
-
 }

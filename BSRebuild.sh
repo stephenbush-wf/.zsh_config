@@ -637,6 +637,10 @@ gtsky () {
   activate_virtualenv
 }
 
+alias bsRunServer="
+  gtsky
+  ./manage.py runserver 0.0.0.0:8001
+"
 
 
 

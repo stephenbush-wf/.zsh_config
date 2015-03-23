@@ -129,7 +129,7 @@ function activate_virtualenv() {
         if [[ $VENVAR__Use_Workon == true ]]; then
           workon $myVenv && export CD_VIRTUAL_ENV=$myVenv
         else
-          source "$WORKON_HOME""$myVenv""/bin/activate" && export CD_VIRTUAL_ENV=$myVenv
+          source "$WORKON_HOME/$myVenv""/bin/activate" && export CD_VIRTUAL_ENV=$myVenv
         fi
       fi
       return 0
@@ -163,14 +163,17 @@ function _lookupEnvForDirectory () {
   local VENVBASE="$WORKON_HOME"
   local FILE
   local FOUNDENVDIR
-  for ENV in $(workon); 
+  # for ENV in $(workon);
+  for ENV in $(ls -1 $VENVBASE);
   do
-    FILE="$VENVBASE/$ENV/.project"
-    if [[ -e $FILE ]]; then
-      FOUNDENVDIR=$(cat $FILE)
-      if [[ $FOUNDENVDIR == $PWD ]]; then
-        echo "${ENV}"
-        return 0
+    if [[ -d "$VENVBASE/$ENV" ]]; then
+      FILE="$VENVBASE/$ENV/.project"
+      if [[ -e $FILE ]]; then
+        FOUNDENVDIR=$(cat $FILE)
+        if [[ $FOUNDENVDIR == $PWD ]]; then
+          echo "${ENV}"
+          return 0
+        fi
       fi
     fi
   done

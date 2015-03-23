@@ -1,8 +1,14 @@
 #!/bin/sh
-# Written by Stephen Bush, Workiva (HyperText)
-# Some elements borrowed and modified from existing Mods:
+# ==============================================================================
+# The ultimate Git/Python Oh-My-ZSH theme.
+#   Written by Stephen Bush, Workiva (HyperText)
+# Some elements are borrowed and modified from existing Mods:
 #   -- Soliah
 #   -- fishy
+# This script optionally uses functions from Stephen Bush's 'GeneralFunctions.sh' to improve 
+#   performance and interoperability with other scripts.  However, if the desired functions are not 
+#   available, alternatives are used instead to preserve functionality and supress errors.
+
 
 
 # ========== Set up the Theme config: ==========
@@ -10,10 +16,13 @@
   # dependencies to update.  You can set the option to false to disable the command hooks, however 
   # this will also automatically disable the dependency function.
 MOD_OPTION_OVERRIDE_ALIASES=true
-  # This option should contain the path to Stephen Bush's 'ConfigWriter.sh', which is a tool used
-  # for creating and using custom config files.  This is required by the mod to improve performance, 
-  # enabling concurrency of operations and memoization of computed results.
-MOD_OPTION_SOURCE_OF_CONFIGWRITER=$(scriptPath $0)"/ConfigWriter.sh"
+which -s prependAlias &> /dev/null
+if [[ $? != 0 ]]; then
+  echo "$fg[red]Error, this Oh-My-ZSH Theme requires Stephen Bush's ConfigWriter.sh in order to function properly.  Please ensure that it is sourced in your .zshrc file prior to loading this theme."
+  return
+fi
+
+
 
 
 PROMPT='%{$fg[cyan]%}$(addSpace)Working in %{$reset_color%}%{$fg_bold[white]%}$(_getPwd)%b%{$reset_color%}$(getDeps)
@@ -245,8 +254,12 @@ function theme_updatePWD () {
 
 # ========== Set up the Config Writer ==========
 if [[ $MOD_OPTION_SOURCE_OF_CONFIGWRITER != false ]]; then
-    GITMOD_CONFIG_FILE=$(scriptPath $0)"/.GitModTheme-""${TTY##*/}"".cfg"
-    source $MOD_OPTION_SOURCE_OF_CONFIGWRITER
+    which -s scriptPath &> /dev/null
+    if [[ $? == 0 ]]; then
+      GITMOD_CONFIG_FILE=$(scriptPath $0)"/.GitModTheme-""${TTY##*/}"".cfg"
+    else 
+      GITMOD_CONFIG_FILE="~/.GitModTheme-""${TTY##*/}"".cfg"
+    fi
     config reset -c "$GITMOD_CONFIG_FILE"
     config add -kv repoHasCommit "false" -c "$GITMOD_CONFIG_FILE"
     config add -k localD -c "$GITMOD_CONFIG_FILE"
