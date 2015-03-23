@@ -5,7 +5,7 @@ Repository Contents:
 - [Standalone Modules](#Standalone Modules)
   - [BSRebuild.sh](#BSRebuild.sh)
   - [ConfigWriter.sh](#ConfigWriter.sh)
-  - [OnLoad.sh](#OnLoad)
+  - [OnLoad.sh](#onloadsh)
   - [VirtualEnvHandler.sh](#VirtualEnvHandler.sh)
 - [Random Aliases/Functions](#Random Aliases/Functions)
   - [GitFunctions.sh](#GitFunctions.sh)
