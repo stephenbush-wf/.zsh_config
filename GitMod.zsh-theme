@@ -16,7 +16,7 @@
   # dependencies to update.  You can set the option to false to disable the command hooks, however 
   # this will also automatically disable the dependency function.
 MOD_OPTION_OVERRIDE_ALIASES=true
-which -s prependAlias &> /dev/null
+which -s config &> /dev/null
 if [[ $? != 0 ]]; then
   echo "$fg[red]Error, this Oh-My-ZSH Theme requires Stephen Bush's ConfigWriter.sh in order to function properly.  Please ensure that it is sourced in your .zshrc file prior to loading this theme."
   return

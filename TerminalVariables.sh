@@ -15,7 +15,7 @@
 TVAR_CONFIG_FILE=$PWD"/.TERM_VARS.cfg"
 
 # Dependency Check
-which -s prependAlias &> /dev/null
+which -s config &> /dev/null
 if [[ $? != 0 ]]; then
   echo "$fg[red]Error, this Script requires Stephen Bush's ConfigWriter.sh in order to function properly.  Please ensure that it is sourced in your .zshrc file prior to loading this script."
   return
