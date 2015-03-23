@@ -14,13 +14,13 @@ Repository Contents:
 
 <a name="Oh-My-ZSH Themes"></a>Oh-My-ZSH Themes:
 ======================
-#### <a name="GitMod.zsh-theme"></a>GitMod.zsh-theme
+#### GitMod.zsh-theme
 
 
 
-<a name="Standalone Modules"></a>Standalone Modules:
+Standalone Modules:
 ======================
-#### <a name="BSRebuild.sh"></a>BSRebuild.sh
+#### BSRebuild.sh
 
 #### <a name="ConfigWriter.sh"></a>ConfigWriter.sh
 The purpose of this Script is to make management of one or more configuration files as simple, clean and performant as possible while providing a simple interface for interacting with them.
