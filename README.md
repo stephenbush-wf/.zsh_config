@@ -55,6 +55,19 @@ Configuration files can have many uses, including but not limited to:
 
 
 #### TerminalVariables.sh
+Define and save commands unique to individual terminal IDs, to be run when called at the appropriate time.  Allows for a single command to cause different behavior in each window.
+
+Terminal variables can have many uses, including but not limited to:
+  - The ability to define certain values with distinct to each terminal
+  - Programmatically set up different configuration settings for each terminal
+  - Create a list of commands to be executed that is unique to each terminal
+
+##### Functions:
+- **setTerminalVariable \<Keyname\> \<Value\>**
+  - Set a variable for the current Terminal ID with the specified key/value
+- **getTerminalVariable \<Keyname\>**
+  - Retrieve the specified variable for the current Terminal ID with the specified key
+
 
 
 #### VirtualEnvHandler.sh
