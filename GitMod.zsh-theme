@@ -186,6 +186,18 @@ function ifBuildingDependencyList () {
   else
     return 1
   fi
+  #if [[ $(ps | grep $(getBaseDir $TTY) | grep -c "bower") -gt 0 ]]; then
+  #  echo "Waiting Bower" >&2
+  #  return 0
+  #elif [[ $(ps | grep $(getBaseDir $TTY) | grep -c "pip") -gt 0 ]]; then
+  #  echo "Waiting Pip" >&2
+  #  return 0
+  #elif [[ $(ps | grep $(getBaseDir $TTY) | grep -c "cd") -gt 0 ]]; then
+  #  echo "Waiting cd" >&2
+  #  return 0
+  #else
+  #  return 1    
+  #fi
 }
 
 buildDependencyList () {
@@ -240,11 +252,13 @@ testPip () {
 function theme_updateDeps () {
   # Only rebuild if not already rebuilding
   # ifBuildingDependencyList || ( buildDependencyList & )
+  
   # Rebuild every time -- Reccomended, because a script with multiple pip/bower
   # commands could kick off a dependency update before the list is finalized, and
   # cause the list to be off indefinitely.
-  ifBuildingDependencyList || ( buildDependencyList & )
-
+  # echo "-- PS --"
+  # ps | grep $(getBaseDir $TTY) | grep "bower"
+  ( buildDependencyList & )
 }
 function theme_updatePWD () {
   fishyPWD="Update"
@@ -277,11 +291,11 @@ if [[ $MOD_OPTION_OVERRIDE_ALIASES == true ]]; then
     if [[ $? == 0 ]]; then
         appendAlias pip "theme_updateDeps"
         appendAlias bower "theme_updateDeps"
-        appendAlias cd "theme_updateDeps; theme_updatePWD"
+        appendAlias cd "theme_updatePWD; theme_updateDeps"
     else
         alias pip="theme_updateDeps; \pip"
         alias bower "theme_updateDeps; \bower"
-        alias cd "theme_updateDeps; theme_updatePWD; \cd"
+        alias cd "theme_updatePWD; theme_updateDeps; \cd"
     fi
 else
     localD=""
