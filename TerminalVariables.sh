@@ -49,6 +49,11 @@ function setTerminalVariable() {
 # getTerminalVariable <Keyname>
 # Retrieve the specified variable for the current Terminal ID with the specified key
 function getTerminalVariable() {
+	if [[ $1 == "" ]]; then
+		echo "$fg[red]Error, setTerminalVariable requires at least one parameter, which is a variable keyname!"
+		return 11
+	fi
+	
 	local itemToLoad=$(echo "$TTY" | sed -e 's:/::g')"_""$1"
 	# echo "Loading $itemToLoad"
 	config -c $TVAR_CONFIG_FILE load -k $itemToLoad
