@@ -12,7 +12,7 @@ Repository Contents:
   - [GeneralFunctions.sh](#generalfunctionssh)
   - [HyperTextStockShellAliases.sh](#hypertextstockshellaliasessh)
 
-Oh-My-ZSH Themes: 
+Oh-My-ZSH Themes:
 ======================
 #### GitMod.zsh-theme
 
