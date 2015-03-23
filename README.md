@@ -1,16 +1,27 @@
-[link text](#VirtualEnvHandler.sh)
-
-Oh-My-ZSH Themes:
+Repository Contents:
 ======================
-#### GitMod.zsh-theme
+- [Oh-My-ZSH Themes](#VirtualEnvHandler.sh)
+  - [GitMod.zsh-theme](#GitMod.zsh-theme)
+- [Standalone Modules](#Standalone Modules)
+  - [BSRebuild.sh](#BSRebuild.sh)
+  - [ConfigWriter.sh](#ConfigWriter.sh)
+  - [VirtualEnvHandler.sh](#VirtualEnvHandler.sh)
+- [Random Aliases/Functions](#Random Aliases/Functions)
+  - [GitFunctions.sh](#GitFunctions.sh)
+  - [GeneralFunctions.sh](#GeneralFunctions.sh)
+  - [HyperTextStockShellAliases.sh](#HyperTextStockShellAliases.sh)
 
-
-
-Standalone Modules:
+<a name="Oh-My-ZSH Themes"></a>Oh-My-ZSH Themes:
 ======================
-#### BSRebuild.sh
+#### <a name="GitMod.zsh-theme"></a>GitMod.zsh-theme
 
-#### ConfigWriter.sh
+
+
+<a name="Standalone Modules"></a>Standalone Modules:
+======================
+#### <a name="BSRebuild.sh"></a>BSRebuild.sh
+
+#### <a name="ConfigWriter.sh"></a>ConfigWriter.sh
 
 #### <a name="VirtualEnvHandler.sh"></a>VirtualEnvHandler.sh
 This module gives you several useful functions as well as improved usability around Virtual Environment handling, including automatic VEnv detection in any directory (even nested subdirectories), *without* restrictions such as the need for a hidden `.venv` file or the VEnv to named after the directory. (However, these popular optimizations are also incorporated to improve detection performance.)  It also features automatic activation/deactivation of these environments via the cd command
@@ -34,11 +45,11 @@ This module gives you several useful functions as well as improved usability aro
 
 
 
-Random Aliases/Functions:
+<a name="Random Aliases/Functions"></a>Random Aliases/Functions:
 ======================
-#### GitFunctions.sh
+#### <a name="GitFunctions.sh"></a>GitFunctions.sh
 
-#### GeneralFunctions.sh
+#### <a name="GeneralFunctions.sh"></a>GeneralFunctions.sh
 
-#### HyperTextStockShellAliases.sh
+#### <a name="HyperTextStockShellAliases.sh"></a>HyperTextStockShellAliases.sh
 
