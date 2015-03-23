@@ -75,6 +75,7 @@ Terminal variables can have many uses, including but not limited to:
 
 ##### Getting Started with iTerm command bindings
 1. Create an iTerm Window arrangement
+2. (More soon)
 
 
 #### VirtualEnvHandler.sh
