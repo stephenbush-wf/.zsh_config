@@ -60,3 +60,7 @@ function getTerminalVariable() {
 	eval echo \$$itemToLoad
 	return 0
 }
+
+function runTerminalFunction() {
+	eval $(getTerminalVariable $1)
+}
