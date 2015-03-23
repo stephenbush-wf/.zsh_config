@@ -5,7 +5,7 @@ Repository Contents:
 - [Standalone Modules](#standalone-modules)
   - [BSRebuild.sh](#bsrebuildsh)
   - [ConfigWriter.sh](#configwritersh)
-  - [OnLoad.sh](#onloadsh)
+  - [TerminalVariables.sh](#terminalvariables)
   - [VirtualEnvHandler.sh](#virtualenvhandlersh)
 - [Random Aliases/Functions](#random-aliasesfunctions)
   - [GitFunctions.sh](#gitfunctionssh)
@@ -22,7 +22,7 @@ Standalone Modules:
 ======================
 #### BSRebuild.sh
 
-#### <a name="ConfigWriter.sh"></a>ConfigWriter.sh
+#### ConfigWriter.sh
 The purpose of this Script is to make management of one or more configuration files as simple, clean and performant as possible while providing a simple interface for interacting with them.
 
 Configuration files can have many uses, including but not limited to:
@@ -54,10 +54,10 @@ Configuration files can have many uses, including but not limited to:
       - NOTE: The empty string "" is considered a legal value for this option. Because of this, the -v option should be specified LAST in any 'config' command, to avoid the script accidently parsing other parameters as values in the case where an expression resolves to the empty string.
 
 
-#### <a name="OnLoad.sh"></a>OnLoad.sh
+#### TerminalVariables.sh
 
 
-#### <a name="VirtualEnvHandler.sh"></a>VirtualEnvHandler.sh
+#### VirtualEnvHandler.sh
 This module gives you several useful functions as well as improved usability around Virtual Environment handling, including automatic VEnv detection in any directory (even nested subdirectories), *without* restrictions such as the need for a hidden `.venv` file or the VEnv to be named after the directory. (However, these popular optimizations are also incorporated to improve detection performance.)  It also features automatic activation/deactivation of these environments via the cd command.
 
 **Note:** This script optionally uses functions from 'GeneralFunctions.sh' to improve performance and interoperability with other scripts.  However, if the desired functions are not available, alternatives are used instead to preserve functionality and supress errors.
@@ -84,11 +84,11 @@ This module gives you several useful functions as well as improved usability aro
 
 
 
-<a name="Random Aliases/Functions"></a>Random Aliases/Functions:
+Random Aliases/Functions:
 ======================
-#### <a name="GitFunctions.sh"></a>GitFunctions.sh
+#### GitFunctions.sh
 
-#### <a name="GeneralFunctions.sh"></a>GeneralFunctions.sh
+#### GeneralFunctions.sh
 
-#### <a name="HyperTextStockShellAliases.sh"></a>HyperTextStockShellAliases.sh
+#### HyperTextStockShellAliases.sh
 
