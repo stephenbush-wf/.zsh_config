@@ -1,9 +1,20 @@
 #!/bin/sh
-# Written by Stephen Bush, Workiva (HyperText)
+# ==============================================================================
+# Dynamically obtain the virtualenv when CD into a directory
+#   Written by Stephen Bush, Workiva (HyperText)
+# Based initially on https://gist.github.com/clneagu/7990272 & other places, with many improvements.
+# This module gives you several useful functions as well as improved usability around Virtual 
+#   Environment handling, including automatic VEnv detection in any directory (even nested 
+#   subdirectories), *without* restrictions such as the need for a hidden `.venv` file or the VEnv 
+#   to be named after the directory. (However, these popular optimizations are also incorporated to 
+#   improve detection performance.)  It also features automatic activation/deactivation of these 
+#   environments via the cd command.
+# This script optionally uses functions from Stephen Bush's 'GeneralFunctions.sh' to improve 
+#   performance and interoperability with other scripts.  However, if the desired functions are not 
+#   available, alternatives are used instead to preserve functionality and supress errors.
 
-# This script optionally uses functions Stephen Bush's 'GeneralFunctions.sh' to improve performance
-#   and interoperability with other scripts.  However, if the desired functions are not available, 
-#   alternatives are used instead to preserve functionality and supress errors.
+
+
 
 # ======================================================
 #   VirtualEnv Handling System Config
@@ -33,11 +44,9 @@ VENVAR__Deactivate_Venv_When_None_Detected=true
 
 
 
-# ==============================================================================
-# Dynamically obtain the virtualenv when CD into a directory
-# Based originally on https://gist.github.com/clneagu/7990272 & other places, with improvements by 
-#   Stephen Bush, Workiva
 
+# ==============================================================================
+# Functions
 
 # check_virtualenv <directory>
 # This function returns the name of the VEnv for the specified directory, or for the current PWD if 
