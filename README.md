@@ -26,11 +26,11 @@ Repository Contents:
 #### <a name="VirtualEnvHandler.sh"></a>VirtualEnvHandler.sh
 This module gives you several useful functions as well as improved usability around Virtual Environment handling, including automatic VEnv detection in any directory (even nested subdirectories), *without* restrictions such as the need for a hidden `.venv` file or the VEnv to named after the directory. (However, these popular optimizations are also incorporated to improve detection performance.)  It also features automatic activation/deactivation of these environments via the cd command
 
-**check_virtualenv <directory>** -- This function returns the name of the VEnv for the specified directory, or for the current PWD if none specified.
+**check_virtualenv \<directory\>** -- This function returns the name of the VEnv for the specified directory, or for the current PWD if none specified.
 
 **activate_virtualenv** -- This function will detect and activate the Virtual Environment for the current PWD, or deactivate if there is none associated with the current directory.
 
-**make_venv_file <name_of_virtual_environment>** -- Create a `.venv` file in the PWD with specified virtualenvironment.  This allows you to temporarily override the virtual environment for a directory if needed, as well as provide a faster mechanism for VEnv lookup in a directory.
+**make_venv_file \<name_of_virtual_environment\>** -- Create a `.venv` file in the PWD with specified virtualenvironment.  This allows you to temporarily override the virtual environment for a directory if needed, as well as provide a faster mechanism for VEnv lookup in a directory.
 
 ##### Configurables:
 *VENVAR__Override_CD_Alias* -- Enables automatic VirtualEnv switching mode.  Extremely useful if you primarily navigate via `cd`, otherwise it could be inconsistent and unhelpful.  Can also integrate with addons like 'Autojump' if set up properly to do so.
