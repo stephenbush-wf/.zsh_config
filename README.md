@@ -28,7 +28,7 @@ This module gives you several useful functions as well as improved usability aro
 
 **check_virtualenv <directory>** -- This function returns the name of the VEnv for the specified directory, or for the current PWD if none specified.
 
-**activate_virtualenv** --
+**activate_virtualenv** -- This function will detect and activate the Virtual Environment for the current PWD, or deactivate if there is none associated with the current directory.
 
 **make_venv_file <name_of_virtual_environment>** -- Create a `.venv` file in the PWD with specified virtualenvironment.  This allows you to temporarily override the virtual environment for a directory if needed, as well as provide a faster mechanism for VEnv lookup in a directory.
 
