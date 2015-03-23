@@ -5,7 +5,7 @@ Repository Contents:
 - [Standalone Modules](#standalone-modules)
   - [BSRebuild.sh](#bsrebuildsh)
   - [ConfigWriter.sh](#configwritersh)
-  - [TerminalVariables.sh](#terminalvariables)
+  - [TerminalVariables.sh](#terminalvariablessh)
   - [VirtualEnvHandler.sh](#virtualenvhandlersh)
 - [Random Aliases/Functions](#random-aliasesfunctions)
   - [GitFunctions.sh](#gitfunctionssh)
