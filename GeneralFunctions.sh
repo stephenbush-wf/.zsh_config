@@ -77,47 +77,35 @@ function loadZSH() {
 # Alias Management -- Provides a framework for safely "Hooking" into aliases, 
 #   for makeshift event handling
 
-function _createBaseAliasNew () {
-  # {
-    local AliasToTest=$1"_BaseAliasContent"
-    if [[ $(eval echo \$$AliasToTest) == "" ]]; then
-
-      if [[ false == true ]]; then
-        local Text=""
-        alias $1
-        if [[ $? -gt 0 ]]; then
-          echo "CREATING BASE" >&2
-          # No alias exists
-          Text='\'"$1"' $@'
-        else
-          echo "USING EXISTING ALIAS" >&2
-          local TEMP_PREV_CONTENTS=$(eval echo \$$1)""
-          eval $(alias $1 | sed -e 's:\\:\\\\:g')
-          Text="$(eval echo \$$1)"
-          eval "$1""=""$TEMP_PREV_CONTENTS"
-        fi
-        eval "$AliasToTest""="'$Text'
-        eval echo "3-- \$cd_BaseAliasContent ""-!-" >&2
-      fi
-
-      if [[ false == true ]]; then
-        local Text=""
-        # Text='\'"$1"' $@'
-        Text="'\\\\$1 $""@'"
-        # eval "$AliasToTest""="'$Text'
-        eval $AliasToTest=$Text
-      fi
-    fi
-  # } &> /dev/null
-}
-
-
 function _createBaseAlias () {
   {
     local AliasToTest=$1"_BaseAliasContent"
     if [[ $(eval echo \$$AliasToTest) == "" ]]; then
-      local Text="'\\\\$1 $""@'"
-      eval $AliasToTest=$Text
+      if [[ true == true ]]; then
+        local TempText=""
+        alias $1
+        if [[ $? -gt 0 ]]; then
+          # No alias exists
+          TempText="\\\\$1 $""@"
+        else
+          local TEMP_PREV_CONTENTS=$(eval echo \$$1)""
+          eval $(alias $1 | sed -e 's:\\:\\\\:g')
+          TempText="$(eval echo \$$1)"
+          eval "$1""=""$TEMP_PREV_CONTENTS"
+        fi
+        eval "$AliasToTest""="'$TempText'
+      fi
+    fi
+  } &> /dev/null
+}
+
+
+function _createBaseAliasOLD () {
+  {
+    local AliasToTest=$1"_BaseAliasContent"
+    if [[ $(eval echo \$$AliasToTest) == "" ]]; then
+      local TempText="'\\\\$1 $""@'"
+      eval $AliasToTest=$TempText
     fi
   } &> /dev/null
 }

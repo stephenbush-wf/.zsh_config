@@ -5,7 +5,7 @@
 #
 # Define and save commands unique to individual terminal IDs, to be run when 
 #   called at the appropriate time.  Allows for a single command to cause
-#   different
+#   different behavior in each window.
 # Terminal variables can have many uses, including but not limited to:
 #   -- The ability to define certain values with distinct to each terminal
 #   -- Programmatically set up different configuration settings for each terminal
@@ -53,7 +53,7 @@ function getTerminalVariable() {
 		echo "$fg[red]Error, setTerminalVariable requires at least one parameter, which is a variable keyname!"
 		return 11
 	fi
-	
+
 	local itemToLoad=$(echo "$TTY" | sed -e 's:/::g')"_""$1"
 	# echo "Loading $itemToLoad"
 	config -c $TVAR_CONFIG_FILE load -k $itemToLoad
