@@ -16,6 +16,7 @@ Oh-My-ZSH Themes:
 ======================
 #### GitMod.zsh-theme
 
+**Note:** This script depends on ConfigWriter.sh in order to run effectively
 
 
 Standalone Modules:
@@ -61,6 +62,8 @@ Terminal variables can have many uses, including but not limited to:
   - The ability to define certain values with distinct to each terminal
   - Programmatically set up different configuration settings for each terminal
   - Create a list of commands to be executed that is unique to each terminal
+
+**Note:** This script depends on ConfigWriter.sh in order to run effectively
 
 ##### Functions:
 - **setTerminalVariable \<Keyname\> \<Value\>**
