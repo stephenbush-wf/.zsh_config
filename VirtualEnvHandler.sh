@@ -1,5 +1,9 @@
 #!/bin/sh
-# Written by Stephen Bush, Workiva LLC (HyperText)
+# Written by Stephen Bush, Workiva (HyperText)
+
+# This script optionally uses functions Stephen Bush's 'GeneralFunctions.sh' to improve performance
+#   and interoperability with other scripts.  However, if the desired functions are not available, 
+#   alternatives are used instead to preserve functionality and supress errors.
 
 # ======================================================
 #   VirtualEnv Handling System Config
@@ -31,15 +35,24 @@ VENVAR__Deactivate_Venv_When_None_Detected=true
 
 # ==============================================================================
 # Dynamically obtain the virtualenv when CD into a directory
-# Based originally on https://gist.github.com/clneagu/7990272 & other places, 
-# with improvements by Stephen Bush, Workiva LLC
-check_virtualenv() {
+# Based originally on https://gist.github.com/clneagu/7990272 & other places, with improvements by 
+#   Stephen Bush, Workiva
+
+
+# check_virtualenv <directory>
+# This function returns the name of the VEnv for the specified directory, or for the current PWD if 
+#   none specified.
+function check_virtualenv() {
 
   local ENV_NAME="0"
   local tempENV_NAME
   local prev_pwd=$PWD
 
-  while [[ true == true ]]; do
+  if [[ $1 != "" ]]; then
+    builtin cd $1
+  fi
+
+  while [ true ]; do
     # Check to see if a '.venv' file exists
     if [[ $ENV_NAME == "0" ]]; then
       if [ -e .venv ]; then
@@ -64,7 +77,7 @@ check_virtualenv() {
 
     # Lookup the venv by rolling through each existing venv and matching one to pwd
     if [[ $ENV_NAME == "0" ]]; then
-      tempENV_NAME=$(lookupEnvForDirectory)
+      tempENV_NAME=$(_lookupEnvForDirectory)
       if [[ $? == 0 ]]; then
         #echo "FOUND BY LOOKUP!"
         ENV_NAME="$tempENV_NAME"
@@ -86,25 +99,11 @@ check_virtualenv() {
   return 0
 }
 
-lookupEnvForDirectory () {
-  local VENVBASE="$WORKON_HOME"
-  local FILE
-  local FOUNDENVDIR
-  for ENV in $(workon); 
-  do
-    FILE="$VENVBASE/$ENV/.project"
-    if [[ -e $FILE ]]; then
-      FOUNDENVDIR=$(cat $FILE)
-      if [[ $FOUNDENVDIR == $PWD ]]; then
-        echo "${ENV}"
-        return 0
-      fi
-    fi
-  done
-  return 1
-}
 
-activate_virtualenv() {
+# activate_virtualenv
+# This function will detect and activate the Virtual Environment for the current PWD, or deactivate 
+#   if there is none associated with the current directory.
+function activate_virtualenv() {
   # Check to see if we're in a git repository
   # This limits venv activation to ONLY directories inside a git repo.
   if [[ $VENVAR__Activate_Venv_In_Git_Dirs_Only == true ]]; then
@@ -136,6 +135,39 @@ activate_virtualenv() {
   return 0
 }
 
+
+# make_venv_file <name_of_virtual_environment>
+# Create a `.venv` file in the PWD with specified virtualenvironment. This allows you to temporarily
+#   override the virtual environment for a directory if needed, as well as provide a faster 
+#   mechanism for VEnv lookup in a directory.
+function make_venv_file() {
+  local File=".venv"
+  if [[ -e $File ]]; then
+    rm -rf $File
+  fi
+  touch $File
+  echo "$1" | tee -a $File
+}
+
+
+function _lookupEnvForDirectory () {
+  local VENVBASE="$WORKON_HOME"
+  local FILE
+  local FOUNDENVDIR
+  for ENV in $(workon); 
+  do
+    FILE="$VENVBASE/$ENV/.project"
+    if [[ -e $FILE ]]; then
+      FOUNDENVDIR=$(cat $FILE)
+      if [[ $FOUNDENVDIR == $PWD ]]; then
+        echo "${ENV}"
+        return 0
+      fi
+    fi
+  done
+  return 1
+}
+
 # Call check_virtualenv in case opening directly into a directory (e.g
 # when opening a new tab in Terminal.app).
 if [[ $VENVAR__Override_CD_Alias == true ]]; then
@@ -146,22 +178,17 @@ if [[ $VENVAR__Override_CD_Alias == true ]]; then
   activate_virtualenv
 
   # Override the default CD functionality to provide automatic venv switching
-  which -s prependAlias &> /dev/null
+  # Check for appendAlias dependency
+  which -s appendAlias &> /dev/null
   if [[ $? -gt 0 ]]; then
   	venv_cd () {
       builtin cd "$@" && activate_virtualenv
-	}
-	alias cd="venv_cd"
+	  }
+    alias cd="venv_cd"
   else
-	venv_cd () {
-	  activate_virtualenv
-	}
+  	venv_cd () {
+  	  activate_virtualenv
+    }
   	appendAlias cd "venv_cd"
   fi
 fi
-
-function makeVenvFile() {
-  local File=".venv"
-  touch $File
-  echo "$1" | tee -a $File
-}
