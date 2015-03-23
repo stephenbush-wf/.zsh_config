@@ -73,6 +73,8 @@ Terminal variables can have many uses, including but not limited to:
 - **getTerminalVariable \<Keyname\>**
   - Retrieve the specified variable for the current Terminal ID with the specified key
 
+##### Getting Started with iTerm command bindings
+1. Create an iTerm Window arrangement
 
 
 #### VirtualEnvHandler.sh
