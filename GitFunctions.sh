@@ -45,6 +45,7 @@ function gcom() {
   if [[ $1 != "" ]]; then
     local comMsg=""
     comMsg+="${ref#refs/heads/}"" - ""${@:1}"
+    # TODO: Dont have -a here, or make it an option.
     git commit -a -m "$comMsg"
   else
     echo -n ${ref#refs/heads/}" - " | pbcopy
