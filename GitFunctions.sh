@@ -37,3 +37,17 @@ gBranch () {
   git pull $REMOTE $BASE
 }
 alias gb="gBranch"
+
+function gcom() {
+  local ref=""
+  ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
+  ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
+  if [[ $1 != "" ]]; then
+    local comMsg="${ref#refs/heads/}"" "${@:1}
+    git commit -a -m "$comMsg"
+  else
+    echo -n ${ref#refs/heads/}" " | pbcopy
+    git commit
+  fi
+}
+
