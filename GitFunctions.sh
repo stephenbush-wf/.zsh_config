@@ -43,10 +43,11 @@ function gcom() {
   ref=$(command git symbolic-ref HEAD 2> /dev/null) || \
   ref=$(command git rev-parse --short HEAD 2> /dev/null) || return 0
   if [[ $1 != "" ]]; then
-    local comMsg="${ref#refs/heads/}"" "${@:1}
-    git commit -a -m "$comMsg"
+    local comMsg=""
+    comMsg+="${ref#refs/heads/}"" - ""${@:1}"
+    git commit -a -m \"$comMsg\"
   else
-    echo -n ${ref#refs/heads/}" " | pbcopy
+    echo -n ${ref#refs/heads/}" - " | pbcopy
     git commit
   fi
 }
