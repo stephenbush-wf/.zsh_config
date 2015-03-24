@@ -36,9 +36,9 @@ function setTerminalVariable() {
 		return 11
 	fi
 	local itemToLoad=$(echo "$TTY" | sed -e 's:/::g')"_""$1"
-	eval "$itemToLoad""=""<!><!>Empty<!><!>"
+	eval "$itemToLoad""=""\"-!--!-Empty-!--!-\""
 	config -c $TVAR_CONFIG_FILE load -k $itemToLoad
-	if [[ $(eval echo \$$itemToLoad) == "<!><!>Empty<!><!>" ]]; then
+	if [[ $(eval echo \$$itemToLoad) == "-!--!-Empty-!--!-" ]]; then
 		config -c $TVAR_CONFIG_FILE add -kv $itemToLoad $2
 	else 
 		config -c $TVAR_CONFIG_FILE set -kv $itemToLoad $2

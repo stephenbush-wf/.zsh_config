@@ -184,3 +184,7 @@ dockerUpdate() {
   docker pull docker.webfilings.org/hydra/nvs-worker:"$image2ToLoad"
   docker run -d --name nvs-worker --link nvs-task-manager:nvs-task-manager -e "DEMETER_CONF=-l DEBUG" docker.webfilings.org/hydra/nvs-worker:"$image2ToLoad"
 }
+
+function runTests() {
+  runTerminalFunction runTests
+}
