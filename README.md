@@ -11,11 +11,14 @@ Repository Contents:
   - [GitFunctions.sh](#gitfunctionssh)
   - [GeneralFunctions.sh](#generalfunctionssh)
   - [HyperTextStockShellAliases.sh](#hypertextstockshellaliasessh)
+  
+**Note:** Some of the documentation for these scripts is still spotty, but i've tried to design them to be as easy to integrate as possible.  Ping me on HipChat for help setting up any of these scripts.
 
 Oh-My-ZSH Themes:
 ======================
 #### GitMod.zsh-theme
 
+**Note:** This script depends on ConfigWriter.sh in order to run effectively
 
 
 Standalone Modules:
@@ -62,12 +65,17 @@ Terminal variables can have many uses, including but not limited to:
   - Programmatically set up different configuration settings for each terminal
   - Create a list of commands to be executed that is unique to each terminal
 
+**Note:** This script depends on ConfigWriter.sh in order to run effectively
+
 ##### Functions:
 - **setTerminalVariable \<Keyname\> \<Value\>**
   - Set a variable for the current Terminal ID with the specified key/value
 - **getTerminalVariable \<Keyname\>**
   - Retrieve the specified variable for the current Terminal ID with the specified key
 
+##### Getting Started with iTerm command bindings
+1. Create an iTerm Window arrangement
+2. (More soon)
 
 
 #### VirtualEnvHandler.sh
