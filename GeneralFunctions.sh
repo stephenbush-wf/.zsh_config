@@ -90,7 +90,7 @@ function _createBaseAlias () {
         else
           local TEMP_PREV_CONTENTS=$(eval echo \$$1)""
           eval $(alias $1 | sed -e 's:\\:\\\\:g')
-          TempText="$(eval echo \$$1)"
+          TempText="$(eval echo \$$1) $""@"
           eval "$1""=""$TEMP_PREV_CONTENTS"
         fi
         eval "$AliasToTest""="'$TempText'
