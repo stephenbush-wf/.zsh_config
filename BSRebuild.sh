@@ -244,7 +244,9 @@ bsRebuild () {
     if [[ $FlagSkip == false ]]; then
       deactivate
       echo "$fg[cyan] $(bstimestamp) [bs build] Removing Sky Virtual Environment$reset_color"
+      # TODO: Refactor 'sky' to use a less static target, such as a configurable (or check_virtualenv)
       rmvirtualenv sky
+      rm -rf "$WORKON_HOME/sky/"
       echo "$fg[cyan] $(bstimestamp) [bs build] Backing up the untracked user-created files before git clean $reset_color"
       echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up settingslocal.py...$reset_color"
       echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up build-user.properties...$reset_color"
@@ -296,8 +298,8 @@ bsRebuild () {
           git remote update --prune $remote
         done
         echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
-        git branch $BranchName
         git checkout $BranchName
+        git checkout -b $BranchName
         git pull $BranchOrigin $BranchName
       fi
 
@@ -349,8 +351,8 @@ bsRebuild () {
           git remote update --prune $remote
         done
         echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
-        git branch $BranchName
         git checkout $BranchName
+        git checkout -b $BranchName
         git pull $BranchOrigin $BranchName
       else
         echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning origin branches $reset_color"
@@ -412,9 +414,9 @@ bsRebuild () {
         git remote update --prune $remote
       done
       echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
-      git branch $BranchName
-      git checkout $BranchName
-      git pull $BranchOrigin $BranchName
+        git checkout $BranchName
+        git checkout -b $BranchName
+        git pull $BranchOrigin $BranchName
     fi
   fi
 
@@ -609,7 +611,10 @@ bsResetData () {
   gtsky
   rm -rf datastore
   mkdir datastore
-  echo Stephen,Bush,stephen.bush@webfilings.com,w3b,,WebFilings,stephen.bush@webfilings.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011 > ./tools/bulkdata/accounts.csv
+  echo "
+Stephen,Bush,stephen.bush@webfilings.com,w3b,,WebFilings,stephen.bush@webfilings.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
+Leroy,Jenkins,leyroy@jenkins.com,w3b,,WebFilings,leyroy@jenkins.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
+" > ./tools/bulkdata/accounts.csv
   bsEraseReset
 }
 
@@ -690,11 +695,18 @@ function bsrepip() {
 }
 
 alias liDocViewer="
-  yes | pip uninstall sky-docviewer &&
+  pip uninstall -y sky-docviewer &&
   pip install -e ../wf-js-document-viewer &&
   ant link-libs &&
   ant link-doc-viewer &&
   ./tools/link_assets.py sky.docviewer assets
+"
+
+alias liBooks="
+  bsrepip wf-books books &&
+  ant generate-media &&
+  ant link-libs &&
+  ant link-books
 "
 
 
