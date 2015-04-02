@@ -31,8 +31,9 @@ gBranch () {
   git fetch
   git checkout $BASE
   git pull $REMOTE $BASE
-  git branch -t $1
+  git branch $1
   git checkout $1
+  git branch -u $REMOTE $BASE
   git pull $REMOTE $1
   git pull $REMOTE $BASE
 }
