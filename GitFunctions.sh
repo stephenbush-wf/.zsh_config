@@ -33,7 +33,7 @@ gBranch () {
   git pull $REMOTE $BASE
   git branch $1
   git checkout $1
-  git branch -u $REMOTE $BASE
+  git branch -u $REMOTE/$BASE
   git pull $REMOTE $1
   git pull $REMOTE $BASE
 }
