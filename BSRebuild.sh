@@ -111,6 +111,12 @@ bsRebuild () {
     echo "     $fg[cyan] -L"
     echo "        $reset_color Skips the link step."
     echo ""
+    echo "     $fg[cyan] -r"
+    echo "        $reset_color When the build completes, run bigsky (bsRunServer)."
+    echo ""
+    echo "     $fg[cyan] -u"
+    echo "        $reset_color Update the local branch with remote updates (git pull)."
+    echo ""
     if [[ $useDataStoreBackup == true ]]; then    
       echo "     $fg[cyan] -d <name>"
       echo "        $reset_color Backs up the datastore prior to build with the specified name."
