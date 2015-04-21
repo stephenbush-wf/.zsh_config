@@ -613,7 +613,7 @@ bsResetData () {
   mkdir datastore
   echo "
 Stephen,Bush,stephen.bush@webfilings.com,w3b,,WebFilings,stephen.bush@webfilings.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
-Leroy,Jenkins,leyroy@jenkins.com,w3b,,WebFilings,leyroy@jenkins.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
+Leroy,Jenkins,leroy@jenkins.com,m0r3pyl0ns!,,WebFilings,leroy@jenkins.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
 " > ./tools/bulkdata/accounts.csv
   bsEraseReset
 }
