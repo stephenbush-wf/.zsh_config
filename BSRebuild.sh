@@ -135,6 +135,7 @@ bsRebuild () {
   FlagDatastoreBackup=false
   FlagDatastoreRestore=false
   FlagRunBigSky=false
+  FlagUpdate=false
   CurParamNum=1
   while true; do
     eval "CurParam=\$$CurParamNum"
@@ -170,6 +171,12 @@ bsRebuild () {
       CurParam=$(stripString $CurParam r)
       FlagRunBigSky=true
       echo "$fg[cyan] $(bstimestamp) [bs build] -- Running BigSky after build$reset_color"
+    fi
+
+    if [[ $CurParam =~ '^-.*u.*' ]]; then
+      CurParam=$(stripString $CurParam u)
+      FlagUpdate=true
+      echo "$fg[cyan] $(bstimestamp) [bs build] -- Updating branch with remote server$reset_color"
     fi
 
     if [[ $CurParam =~ '^-.*b.*' ]]; then
@@ -307,7 +314,9 @@ bsRebuild () {
         echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
         git checkout $BranchName
         git checkout -b $BranchName
-        git pull $BranchOrigin $BranchName
+        if [[ $FlagUpdate == true ]]; then
+          git pull $BranchOrigin $BranchName
+        fi
       fi
 
       # echo "$fg[cyan] $(bstimestamp) [bs build] Building libraries $reset_color"
@@ -360,12 +369,16 @@ bsRebuild () {
         echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
         git checkout $BranchName
         git checkout -b $BranchName
-        git pull $BranchOrigin $BranchName
+        if [[ $FlagUpdate == true ]]; then
+          git pull $BranchOrigin $BranchName
+        fi
       else
         echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning origin branches $reset_color"
         git remote update --prune origin
         git checkout master
-        git pull origin master
+        if [[ $FlagUpdate == true ]]; then
+          git pull origin master
+        fi
       fi
 
     fi  
@@ -423,7 +436,9 @@ bsRebuild () {
       echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
         git checkout $BranchName
         git checkout -b $BranchName
-        git pull $BranchOrigin $BranchName
+        if [[ $FlagUpdate == true ]]; then
+          git pull $BranchOrigin $BranchName
+        fi
     fi
   fi
 
