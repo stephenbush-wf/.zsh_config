@@ -134,6 +134,7 @@ bsRebuild () {
   FlagBranch=false
   FlagDatastoreBackup=false
   FlagDatastoreRestore=false
+  FlagRunBigSky=false
   CurParamNum=1
   while true; do
     eval "CurParam=\$$CurParamNum"
@@ -163,6 +164,12 @@ bsRebuild () {
       CurParam=$(stripString $CurParam L)
       FlagSkipLink=true
       echo "$fg[cyan] $(bstimestamp) [bs build] -- Skip building repo links$reset_color"
+    fi
+
+    if [[ $CurParam =~ '^-.*r.*' ]]; then
+      CurParam=$(stripString $CurParam r)
+      FlagRunBigSky=true
+      echo "$fg[cyan] $(bstimestamp) [bs build] -- Running BigSky after build$reset_color"
     fi
 
     if [[ $CurParam =~ '^-.*b.*' ]]; then
@@ -486,6 +493,10 @@ bsRebuild () {
   echo "$fg[green]====================================="
   echo "    === BigSky Build Complete ==="
   echo "=====================================$reset_color"
+
+  if [[ $FlagRunBigSky == true ]]; then
+    bsRunServer
+  fi
 }
 
 rebuildSubRepo () {
@@ -642,10 +653,10 @@ gtsky () {
   activate_virtualenv
 }
 
-alias bsRunServer="
+function bsRunServer() {
   gtsky
   ./manage.py runserver 0.0.0.0:8001
-"
+}
 
 
 
