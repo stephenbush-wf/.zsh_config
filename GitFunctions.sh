@@ -27,13 +27,12 @@ gBranch () {
     REMOTE=$3
   fi
 
-
   git fetch
   git checkout $BASE
   git pull $REMOTE $BASE
   git branch $1
   git checkout $1
-  git branch -u $REMOTE/$BASE
+  git branch -u $REMOTE/$1
   git pull $REMOTE $1
   git pull $REMOTE $BASE
 }
