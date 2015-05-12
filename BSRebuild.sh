@@ -313,10 +313,8 @@ bsRebuild () {
       git remote -v
 
       if [[ $FlagBranch == true ]]; then
-        echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning all remote branches $reset_color"
-        for remote in $(git remote); do 
-          git remote update --prune $remote
-        done
+        echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning remote $BranchOrigin $reset_color"
+        git remote update --prune $BranchOrigin
         echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
         git checkout $BranchName
         git checkout -b $BranchName
@@ -368,10 +366,8 @@ bsRebuild () {
       fi
 
       if [[ $FlagBranch == true ]]; then
-        echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning all remote branches $reset_color"
-        for remote in $(git remote); do 
-          git remote update --prune $remote
-        done
+        echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning remote $BranchOrigin $reset_color"
+        git remote update --prune $BranchOrigin
         echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
         git checkout $BranchName
         git checkout -b $BranchName
@@ -435,10 +431,8 @@ bsRebuild () {
 
   else 
     if [[ $FlagBranch == true ]]; then
-      echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning all remote branches $reset_color"
-      for remote in $(git remote); do 
-        git remote update --prune $remote
-      done
+      echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning remote $BranchOrigin $reset_color"
+      git remote update --prune $BranchOrigin
       echo "$fg[cyan] $(bstimestamp) [bs build] Switching branches $reset_color"
         git checkout $BranchName
         git checkout -b $BranchName
@@ -616,6 +610,9 @@ rebuildSubRepo () {
   grunt
 }
 
+# Big Sky Quick-Build and Run
+alias bsqbar="bsRebuild -sLr -ub upstream master"
+
 # This helper function determines whether a bigsky server is currently running
 isBigskyRunning () {
   curl -s http://localhost:8001/home/
@@ -693,9 +690,9 @@ copyStaticAnnotationFile () {
 
 # (From Tim McCall) Link in the viewers and stuff
 alias bsviewerize=" 
-  yes | pip uninstall server_composition &&
+  pip uninstall -y server_composition &&
   pip install -e ../server_composition &&
-  yes | pip uninstall wf-viewer-services &&
+  pip uninstall -y wf-viewer-services &&
   pip install -e ../wf-viewer-services &&
   liDocViewer
   ant link-libs
