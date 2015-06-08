@@ -22,3 +22,12 @@ alias luxbuild="
 "
 alias luxserver="lux && cd server && ./server"
 alias luxclient="lux && cd appHost && goapp serve -host localhost -port 6060 -admin_port 6061"
+
+function lb () {
+	lux
+	cd server
+	go build
+	if [[ $? == 0 ]]; then
+		luxserver
+	fi
+}
