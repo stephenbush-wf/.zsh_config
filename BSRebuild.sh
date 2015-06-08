@@ -462,7 +462,7 @@ bsRebuild () {
     # Link Doc-viewer
     installMe=false
     if [[ $installMe == true ]]; then
-      echo "$fg[cyan] $(bstimestamp) [bs build] -- 'sky-docviewer/wf-js-document-viewer' via pip install -e (liDocViewer())$reset_color"
+      echo "$fg[cyan] $(bstimestamp) [bs build] -- 'sky-docviewer/wf-js-document-viewer' via pip install -e (linkDocViewer())$reset_color"
       bsviewerize
     fi
 
@@ -694,7 +694,7 @@ alias bsviewerize="
   pip install -e ../server_composition &&
   pip uninstall -y wf-viewer-services &&
   pip install -e ../wf-viewer-services &&
-  liDocViewer
+  linkDocViewer
   ant link-libs
 "
 # (From Tim McCall) Bower link in external modules
@@ -723,7 +723,7 @@ function bsrepip() {
   ant link-libs
 }
 
-alias liDocViewer="
+alias linkDocViewer="
   pip uninstall -y sky-docviewer &&
   pip install -e ../wf-js-document-viewer &&
   ant link-libs &&
