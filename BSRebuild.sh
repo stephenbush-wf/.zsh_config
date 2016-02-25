@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # Written by Stephen Bush, Workiva (HyperText)
 
 # Username of the Dev Account on the local machine
@@ -24,7 +25,7 @@ BSVAR__Allow_Rebuild_When_Server_Running=false
 # Flag to allow 'git gc' to run during build process.  Adds about 5 minutes to build time.
 #    Effects may be negligible for most users who dont actually perform dev work on Bigsky.
 BSVAR__Run_Git_Garbage_Collection=false
-BSVAR__Accounts_CSV_Content = "
+BSVAR__Accounts_CSV_Content="
 Stephen,Bush,stephen.bush@webfilings.com,w3b,,WebFilings,stephen.bush@webfilings.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
 Leroy,Jenkins,leroy@jenkins.com,m0r3pyl0ns!,,WebFilings,leroy@jenkins.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
 "
@@ -211,7 +212,7 @@ bsRebuild () {
       # Parse extra param for the Branch Origin
       CurParamNum=$(($CurParamNum+1))
       eval "BranchOrigin=\$$CurParamNum"
-      if [[ $BranchOrigin == "" || $BranchOrigin =~ '^-.*' ]] then
+      if [[ $BranchOrigin == "" || $BranchOrigin =~ '^-.*' ]]; then
         echo "$fg[red] $(bstimestamp) [bs build] ERROR: This command requires at least two arguments following the -b parameter!  See 'bsRebuild --help' for more details.$reset_color"
         return 11
       fi
@@ -219,7 +220,7 @@ bsRebuild () {
       # Parse extra param for the Branch Name
       CurParamNum=$(($CurParamNum+1))
       eval "BranchName=\$$CurParamNum"
-      if [[ $BranchName == "" || $BranchName =~ '^-.*' ]] then
+      if [[ $BranchName == "" || $BranchName =~ '^-.*' ]]; then
         echo "$fg[red] $(bstimestamp) [bs build] ERROR: This command requires at least two arguments following the -b parameter!  See 'bsRebuild --help' for more details.$reset_color"
         return 11
       fi
@@ -235,7 +236,7 @@ bsRebuild () {
       # Parse extra param
       CurParamNum=$(($CurParamNum+1))
       eval "DSBackup=\$$CurParamNum"
-      if [[ $DSBackup == "" || $DSBackup =~ '^-.*' ]] then
+      if [[ $DSBackup == "" || $DSBackup =~ '^-.*' ]]; then
         echo "$fg[red] $(bstimestamp) [bs build] ERROR: This command requires at least one argument following the -d parameter! (Backup name)  See 'bsRebuild --help' for more details.$reset_color"
         return 11
       fi
@@ -444,6 +445,7 @@ bsRebuild () {
       # echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
       bsResetData
     fi
+    gco 'tools/bulkdata/accounts.csv'
 
   else 
     if [[ $FlagBranch == true ]]; then
