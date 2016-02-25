@@ -53,9 +53,10 @@ bsRebuild () {
   }
 
   # Dependency Checks
-  which -s dsBackup &> /dev/null && $BSVAR__Backup_And_Restore_Datastore==true && local useDataStoreBackup=true
-  which -s dsRestore &> /dev/null && $BSVAR__Backup_And_Restore_Datastore==true && local useDataStoreRestore=true
-
+  if [[ $BSVAR__Backup_And_Restore_Datastore == true ]]; then
+    which -s dsBackup &> /dev/null && local useDataStoreBackup=true
+    which -s dsRestore &> /dev/null && local useDataStoreRestore=true
+  fi
   
   if [[ $1 == "help" ]]; then
     echo "$fg[cyan]================================================================================"
@@ -293,7 +294,7 @@ bsRebuild () {
       rm -rf "$WORKON_HOME/$baseVenv/"
     fi
 
-    if [[ $FlagDatastoreReset == false && $useDataStoreBackup == true ]]; then
+    if [[ $FlagDatastoreReset != true && $useDataStoreBackup == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Backing up the Local Datastore to $DSBackup $reset_color"
       dsBackup $DSBackup
     fi
