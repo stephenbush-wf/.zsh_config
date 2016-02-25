@@ -272,14 +272,14 @@ bsRebuild () {
     return 10
   fi
 
-  if [[ $(getBaseDir) != 'bigsky' ]]; then
+  if [[ "${PWD##*/}" != 'bigsky' ]]; then
     echo "$fg[red]Error, this function must be run from a bigsky directory.$reset_color"
     return 10
   fi
   # cd "$BSVAR__Root_Workspace_Directory"
   # gtsky
   cd ..
-  baseDir=$(getBaseDir)
+  baseDir="${PWD##*/}"
   baseVenv=$baseDir"-sky"
   cd bigsky
   workon $baseVenv
@@ -289,14 +289,8 @@ bsRebuild () {
     if [[ $FlagSkip == false ]]; then
       deactivate
       echo "$fg[cyan] $(bstimestamp) [bs build] Removing Sky Virtual Environment$reset_color"
-      # TODO: Refactor 'sky' to use a less static target, such as a configurable (or check_virtualenv)
       rmvirtualenv $baseVenv
       rm -rf "$WORKON_HOME/$baseVenv/"
-      #echo "$fg[cyan] $(bstimestamp) [bs build] Backing up the untracked user-created files before git clean $reset_color"
-      #echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up settingslocal.py...$reset_color"
-      #echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up build-user.properties...$reset_color"
-      #echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up tools/bulkdata/accounts.csv...$reset_color"
-      #copyStaticBigSkyFiles
     fi
 
     if [[ $useDataStoreBackup == true ]]; then
@@ -328,11 +322,11 @@ bsRebuild () {
       echo "$fg[cyan] $(bstimestamp) [bs build] Updating Remote repository settings $reset_color"
       git remote remove origin
       git remote add origin $BSVAR__Bigsky_Fork
-      git remote add trentgrover git@github.com:trentgrover-wf/bigsky.git
-      git remote add robbielamb git@github.com:robbielamb-wf/bigsky.git
-      git remote add mikethiesen git@github.com:mikethiesen-wf/bigsky.git
-      git remote add timmccall git@github.com:timmccall-wf/bigsky.git
-      git remote add jasonzerbe git@github.com:jasonzerbe-wf/bigsky.git
+      #git remote add trentgrover git@github.com:trentgrover-wf/bigsky.git
+      #git remote add robbielamb git@github.com:robbielamb-wf/bigsky.git
+      #git remote add mikethiesen git@github.com:mikethiesen-wf/bigsky.git
+      #git remote add timmccall git@github.com:timmccall-wf/bigsky.git
+      #git remote add jasonzerbe git@github.com:jasonzerbe-wf/bigsky.git
       git remote add upstream git@github.com:Workiva/bigsky.git
       git remote add CI git@github.com:codebuilders-wf/bigsky.git
       git remote -v
@@ -482,7 +476,7 @@ bsRebuild () {
     fi
 
     # Link Doc-viewer
-    installMe=true
+    installMe=false
     if [[ $installMe == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] -- 'sky-docviewer/wf-js-document-viewer' via pip install -e (linkDocViewer())$reset_color"
       linkDocViewer
@@ -552,7 +546,7 @@ killBS () {
 }
 
 rebuildSubRepo () {
-  local MYDIR="$(getBaseDir)"
+  local MYDIR="${PWD##*/}"
   echo "Running general Rebuild steps for Dev Repo '$MYDIR'"
   # Dependency Check
   which -s check_virtualenv &> /dev/null &&
