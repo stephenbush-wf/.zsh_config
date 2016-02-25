@@ -24,6 +24,10 @@ BSVAR__Allow_Rebuild_When_Server_Running=false
 # Flag to allow 'git gc' to run during build process.  Adds about 5 minutes to build time.
 #    Effects may be negligible for most users who dont actually perform dev work on Bigsky.
 BSVAR__Run_Git_Garbage_Collection=false
+BSVAR__Accounts_CSV_Content = "
+Stephen,Bush,stephen.bush@webfilings.com,w3b,,WebFilings,stephen.bush@webfilings.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
+Leroy,Jenkins,leroy@jenkins.com,m0r3pyl0ns!,,WebFilings,leroy@jenkins.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
+"
 
 
 
@@ -403,10 +407,10 @@ bsRebuild () {
       fi
 
     fi  
-    if [[ $FlagSkip == false ]]; then
-      echo "$fg[cyan] $(bstimestamp) [bs build] Replacing untracked files backed up earlier $reset_color"
-      replaceStaticBigSkyFiles
-    fi
+
+    echo "$fg[cyan] $(bstimestamp) [bs build] Replacing untracked files backed up earlier $reset_color"
+    replaceStaticBigSkyFiles
+
     # ========= Temporary Issue workaround =========
     echo "$fg[cyan] $(bstimestamp) [bs build] Downgrading pip to v1.5.6 (Temporary issue workaround) $reset_color"
     pip install pip==1.5.6
@@ -431,14 +435,14 @@ bsRebuild () {
     if [[ $FlagDatastoreReset == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Running erase/reset script $reset_color"
       # echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
-      bsEraseReset
+      bsResetData
     elif [[ $useDataStoreRestore == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Restoring Datastore image to $DSRestore $reset_color"
       dsRestore $DSRestore
     else
       echo "$fg[cyan] $(bstimestamp) [bs build] Running erase/reset script $reset_color"
       # echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
-      bsEraseReset
+      bsResetData
     fi
 
   else 
@@ -568,13 +572,9 @@ replaceStaticBigSkyFiles() {
 }
 
 bsResetData () {
-  gtsky
-  rm -rf datastore
-  mkdir datastore
-  echo "
-Stephen,Bush,stephen.bush@webfilings.com,w3b,,WebFilings,stephen.bush@webfilings.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
-Leroy,Jenkins,leroy@jenkins.com,m0r3pyl0ns!,,WebFilings,leroy@jenkins.com,666-666-6667,555-555-5556,444-444-4445,333-333-3334,2131 North Loop Drive,,,Ames,IA,50011
-" > ./tools/bulkdata/accounts.csv
+  rm -rf $BSVAR__Datastore_Directory
+  mkdir $BSVAR__Datastore_Directory
+  echo $BSVAR__Accounts_CSV_Content > ./tools/bulkdata/accounts.csv
   bsEraseReset
 }
 
