@@ -31,6 +31,8 @@ BSVAR__Run_Git_Garbage_Collection=false
 #   Datastore Management Config
 # ======================================================
 BSVAR__Datastore_Directory='/Users/'"$BSVAR__User_Name"'/Documents/Programming Environment Stuff/datastore/'
+# Flag to allow/disallow the Datastore scripts from running during a build.
+BSVAR__Backup_And_Restore_Datastore=true
 # Flag to allow/disallow the Datastore scripts from running while BigSky is running
 # Recommended false, because the datastore files are somewhat volatile and some elements 
 #   may not be saved until after the server is properly shut down.
@@ -51,8 +53,8 @@ bsRebuild () {
   }
 
   # Dependency Checks
-  which -s dsBackup &> /dev/null && local useDataStoreBackup=true
-  which -s dsRestore &> /dev/null && local useDataStoreRestore=true
+  which -s dsBackup &> /dev/null && $BSVAR__Backup_And_Restore_Datastore==true && local useDataStoreBackup=true
+  which -s dsRestore &> /dev/null && $BSVAR__Backup_And_Restore_Datastore==true && local useDataStoreRestore=true
 
   
   if [[ $1 == "help" ]]; then
@@ -291,7 +293,7 @@ bsRebuild () {
       rm -rf "$WORKON_HOME/$baseVenv/"
     fi
 
-    if [[ $useDataStoreBackup == true ]]; then
+    if [[ $FlagDatastoreReset == false && $useDataStoreBackup == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Backing up the Local Datastore to $DSBackup $reset_color"
       dsBackup $DSBackup
     fi
@@ -425,22 +427,17 @@ bsRebuild () {
       ant full
     fi
 
-    if [[ $useDataStoreRestore == true ]]; then
+    if [[ $FlagDatastoreReset == true ]]; then
+      echo "$fg[cyan] $(bstimestamp) [bs build] Running erase/reset script $reset_color"
+      # echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
+      bsEraseReset
+    elif [[ $useDataStoreRestore == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Restoring Datastore image to $DSRestore $reset_color"
       dsRestore $DSRestore
-      if [[ $? == 11 ]]; then
-        echo "$fg[cyan] $(bstimestamp) [bs build] Unable to restore Datastore image.  Running erase/reset script $reset_color"
-        echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
-        bsEraseReset      
-      fi
-    elif [[ $FlagDatastoreReset == true ]]; then
-      echo "$fg[cyan] $(bstimestamp) [bs build] Running erase/reset script $reset_color"
-      echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
-      bsEraseReset
     else
-      echo "$fg[cyan] $(bstimestamp) [bs build] Restoring Master datastore"
-      #dsRestore "Master Datastore"
-      dsRestore
+      echo "$fg[cyan] $(bstimestamp) [bs build] Running erase/reset script $reset_color"
+      # echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
+      bsEraseReset
     fi
 
   else 
