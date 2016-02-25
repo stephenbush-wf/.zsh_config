@@ -1,18 +1,18 @@
 #!/bin/sh
 # Written by Stephen Bush, Workiva (HyperText)
 
+# Username of the Dev Account on the local machine
+BSVAR__User_Name='StephenBush'
+
 # ======================================================
 #   Bigsky Builder System Config
 # ======================================================
 # Directory of the workspace where all your Workiva repositories live
-BSVAR__Root_Workspace_Directory='/Users/stephenbush/workspaces/wf/'
-BSVAR__Temp_Bigsky_Workspace_Directory="$BSVAR__Root_Workspace_Directory""bigsky/"
+BSVAR__Root_Workspace_Directory='/Users/'"$BSVAR__User_Name"'/workspaces/wf/'
 # Directory into which to store backup files (Settings,data,etc)
-BSVAR__BKDIR='/Users/stephenbush/Documents/Programming Environment Stuff/bigsky Backup Files/'
+BSVAR__BKDIR='/Users/'"$BSVAR__User_Name"'/Documents/Programming Environment Stuff/bigsky Backup Files/'
 # Github URL for the main Bigsky development fork used by you or your team
 BSVAR__Bigsky_Fork='git@github.com:timmccall-wf/bigsky.git'
-# Username of the Dev Account on the local machine
-BSVAR__User_Name='StephenBush'
 # These are the login credentials used to authenticate the SuperAdmin in the Erase-reset script
 BSVAR__EraseResetAdmin="stephen.bush@webfilings.com"
 BSVAR__EraseResetPassword="w3b"
@@ -30,8 +30,7 @@ BSVAR__Run_Git_Garbage_Collection=false
 # ======================================================
 #   Datastore Management Config
 # ======================================================
-# BSVAR__Datastore_Directory="BSVAR__Temp_Bigsky_Workspace_Directory""datastore/"
-BSVAR__Datastore_Directory='/Users/stephenbush/Documents/Programming Environment Stuff/datastore/'
+BSVAR__Datastore_Directory='/Users/'"$BSVAR__User_Name"'/Documents/Programming Environment Stuff/datastore/'
 # Flag to allow/disallow the Datastore scripts from running while BigSky is running
 # Recommended false, because the datastore files are somewhat volatile and some elements 
 #   may not be saved until after the server is properly shut down.
