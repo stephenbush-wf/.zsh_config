@@ -54,7 +54,6 @@ bsRebuild () {
   # Dependency Checks
   which -s dsBackup &> /dev/null && local useDataStoreBackup=true
   which -s dsRestore &> /dev/null && local useDataStoreRestore=true
-  which -s alert &> /dev/null && local useAlert=true
 
   
   if [[ $1 == "help" ]]; then
@@ -524,11 +523,11 @@ bsRebuild () {
   echo "$fg[green]====================================="
   echo "    === BigSky Build Complete ==="
   echo "=====================================$reset_color"
-  if [[ $useAlert == true ]]; then
-    alert "Build complete" 
-  else
-    say "Build complete"
-  fi
+
+
+  # Alert
+  say "Build complete"
+  osascript -e "display notification \"Bigsky Build Complete\" sound name \"Ping.aiff\" with title \"Build Complete\" "  # Mac notification system
 
   if [[ $FlagRunBigSky == true ]]; then
     bsRunServer
@@ -716,7 +715,7 @@ function rebuild() {
     echo $(date -j "+[%H:%M:%S]")
   }
 
-  which -s alert &> /dev/null && local useAlert=true  
+
   which -s check_virtualenv &> /dev/null &&
   which -s activate_virtualenv &> /dev/null || {
     echo "$fg[red]Unable to rebuild; Missing dependency 'check_virtualenv'"
@@ -769,11 +768,10 @@ function rebuild() {
   echo "$fg[green]====================================="
   echo "        === Build Complete ==="
   echo "=====================================$reset_color"
-  if [[ $useAlert == true ]]; then
-    alert "Rebuild complete" "$PWD"
-  else
-    say "Rebuild complete"
-  fi  
+
+  # Alert
+  say "Rebuild complete"
+  osascript -e "display notification \"$(PWD) Build Complete\" sound name \"Ping.aiff\" with title \"Build Complete\" "  # Mac notification system
 }
 
 
