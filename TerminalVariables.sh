@@ -12,7 +12,9 @@
 #   -- Create a list of commands to be executed that is unique to each terminal
 
 
-TVAR_CONFIG_FILE=$PWD"/.TERM_VARS.cfg"
+if [[ $TVAR_CONFIG_FILE == "" ]]; then
+  TVAR_CONFIG_FILE=$PWD"/.TERM_VARS.cfg"
+fi  
 
 # Dependency Check
 which -s config &> /dev/null

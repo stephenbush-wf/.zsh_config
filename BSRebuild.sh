@@ -6,7 +6,9 @@
 # ======================================================
 # Directory of the workspace where all your Workiva repositories live
 BSVAR__Root_Workspace_Directory='/Users/stephenbush/workspaces/wf/'
-BSVAR__Temp_Bigsky_Workspace_Directory="$BSVAR__Root_Workspace_Directory""bigsky"
+BSVAR__Temp_Bigsky_Workspace_Directory="$BSVAR__Root_Workspace_Directory""bigsky/"
+# BSVAR__Datastore_Directory="BSVAR__Temp_Bigsky_Workspace_Directory""datastore/"
+BSVAR__Datastore_Directory='/Users/stephenbush/Documents/Programming Environment Stuff/datastore/'
 # Directory into which to store backup files (Settings,data,etc)
 BSVAR__BKDIR='/Users/stephenbush/Documents/Programming Environment Stuff/bigsky Backup Files/'
 # Github URL for the main Bigsky development fork used by you or your team
@@ -52,6 +54,7 @@ bsRebuild () {
   # Dependency Checks
   which -s dsBackup &> /dev/null && local useDataStoreBackup=true
   which -s dsRestore &> /dev/null && local useDataStoreRestore=true
+  which -s alert &> /dev/null && local useAlert=true
 
   
   if [[ $1 == "help" ]]; then
@@ -114,6 +117,10 @@ bsRebuild () {
     echo "     $fg[cyan] -r"
     echo "        $reset_color When the build completes, run bigsky (bsRunServer)."
     echo ""
+    echo "     $fg[cyan] -R"
+    echo "        $reset_color Normally a build command will fail if Bigsky is running.  The -R flag"
+    echo "       overrides this and allows the build to run anyway"
+    echo ""
     echo "     $fg[cyan] -u"
     echo "        $reset_color Update the local branch with remote updates (git pull)."
     echo ""
@@ -142,6 +149,7 @@ bsRebuild () {
   FlagDatastoreRestore=false
   FlagRunBigSky=false
   FlagUpdate=false
+  FlagOverrideRunningBigSky=false
   CurParamNum=1
   while true; do
     eval "CurParam=\$$CurParamNum"
@@ -179,6 +187,12 @@ bsRebuild () {
       echo "$fg[cyan] $(bstimestamp) [bs build] -- Running BigSky after build$reset_color"
     fi
 
+    if [[ $CurParam =~ '^-.*R.*' ]]; then
+      CurParam=$(stripString $CurParam R)
+      FlagOverrideRunningBigSky=true
+      echo "$fg[cyan] $(bstimestamp) [bs build] -- Override error if bigsky running$reset_color"
+    fi
+
     if [[ $CurParam =~ '^-.*u.*' ]]; then
       CurParam=$(stripString $CurParam u)
       FlagUpdate=true
@@ -208,6 +222,7 @@ bsRebuild () {
       echo "$fg[cyan] $(bstimestamp) [bs build] -- Building remote branch { $BranchOrigin $BranchName }$reset_color"
     fi
 
+    DSBackup="PreBuild Backup"
     if [[ $useDataStoreBackup == true && $CurParam =~ '^-.*d.*' ]]; then
       CurParam=$(stripString $CurParam d)
       FlagDatastoreBackup=true
@@ -223,6 +238,7 @@ bsRebuild () {
       echo "$fg[cyan] $(bstimestamp) [bs build] -- Backing up Datastore directory { $DSBackup }$reset_color"
     fi
 
+    DSRestore="PreBuild Backup"
     if [[ $useDataStoreRestore == true && $CurParam =~ '^-.*D.*' ]]; then
       CurParam=$(stripString $CurParam D)
       FlagDatastoreRestore=true
@@ -251,13 +267,22 @@ bsRebuild () {
   done
 
   # Check to see whether Bigsky is currently running
-  if [[ $BSVAR__Allow_Rebuild_When_Server_Running == false && $(isBigskyRunning) == true ]]; then
-    echo "${CRED}Error, cannot execute this function while BigSky server is running.$reset_color"
+  if [[ $BSVAR__Allow_Rebuild_When_Server_Running == false && $(isBigskyRunning) == true && $FlagOverrideRunningBigSky == false ]]; then
+    echo "$fg[red]Error, cannot execute this function while BigSky server is running.$reset_color"
     return 10
   fi
 
-  cd "$BSVAR__Root_Workspace_Directory"
-  gtsky
+  if [[ $(getBaseDir) != 'bigsky' ]]; then
+    echo "$fg[red]Error, this function must be run from a bigsky directory.$reset_color"
+    return 10
+  fi
+  # cd "$BSVAR__Root_Workspace_Directory"
+  # gtsky
+  cd ..
+  baseDir=$(getBaseDir)
+  baseVenv=$baseDir"-sky"
+  cd bigsky
+  workon $baseVenv
 
   if [[ $FlagLinkOnly == false ]]; then
   
@@ -265,16 +290,16 @@ bsRebuild () {
       deactivate
       echo "$fg[cyan] $(bstimestamp) [bs build] Removing Sky Virtual Environment$reset_color"
       # TODO: Refactor 'sky' to use a less static target, such as a configurable (or check_virtualenv)
-      rmvirtualenv sky
-      rm -rf "$WORKON_HOME/sky/"
-      echo "$fg[cyan] $(bstimestamp) [bs build] Backing up the untracked user-created files before git clean $reset_color"
-      echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up settingslocal.py...$reset_color"
-      echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up build-user.properties...$reset_color"
-      echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up tools/bulkdata/accounts.csv...$reset_color"
-      copyStaticBigSkyFiles
+      rmvirtualenv $baseVenv
+      rm -rf "$WORKON_HOME/$baseVenv/"
+      #echo "$fg[cyan] $(bstimestamp) [bs build] Backing up the untracked user-created files before git clean $reset_color"
+      #echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up settingslocal.py...$reset_color"
+      #echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up build-user.properties...$reset_color"
+      #echo "$fg[cyan] $(bstimestamp) [bs build]   -- Backing up tools/bulkdata/accounts.csv...$reset_color"
+      #copyStaticBigSkyFiles
     fi
 
-    if [[ $FlagDatastoreBackup == true ]]; then
+    if [[ $useDataStoreBackup == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Backing up the Local Datastore to $DSBackup $reset_color"
       dsBackup $DSBackup
     fi
@@ -296,8 +321,8 @@ bsRebuild () {
       cd bigsky
 
       echo "$fg[cyan] $(bstimestamp) [bs build] Building new Virtual Environment $reset_color"
-      mkvirtualenv sky -a $PWD
-      gtsky
+      mkvirtualenv $baseVenv -a $PWD
+      workon $baseVenv
 
       git remote -v
       echo "$fg[cyan] $(bstimestamp) [bs build] Updating Remote repository settings $reset_color"
@@ -335,7 +360,7 @@ bsRebuild () {
   
       echo "$fg[cyan] $(bstimestamp) [bs build] Installing/Updating dependencies $reset_color"
       pip install gae_link_libs
-      env CFLAGS="-Qunused-arguments" CPPFLAGS="-Qunused-arguments" pip install -Ur requirements_dev.txt
+      env CFLAGS="-Qunused-arguments" CPPFLAGS="-Qunused-arguments" pip install -r requirements_dev.txt
       pip install -r requirements.txt
       pip install -e .
       ant link-libs
@@ -352,8 +377,8 @@ bsRebuild () {
 
       if [[ $FlagSkip == false ]]; then
         echo "$fg[cyan] $(bstimestamp) [bs build] Building new Virtual Environment $reset_color"
-        mkvirtualenv sky -a $PWD
-        sky
+        mkvirtualenv $baseVenv -a $PWD
+        workon $baseVenv
 
         echo "$fg[cyan] $(bstimestamp) [bs build] Cleaning up Repository directory $reset_color"
         git reset --hard HEAD
@@ -377,24 +402,16 @@ bsRebuild () {
       else
         echo "$fg[cyan] $(bstimestamp) [bs build] Fetching/Pruning origin branches $reset_color"
         git remote update --prune origin
-        git checkout master
         if [[ $FlagUpdate == true ]]; then
-          git pull origin master
+          git pull
         fi
       fi
 
     fi  
-
-    gtsky
-
     if [[ $FlagSkip == false ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Replacing untracked files backed up earlier $reset_color"
       replaceStaticBigSkyFiles
-      echo "$fg[cyan] $(bstimestamp) [bs build] Creating and permissioning the /datastore/ directory $reset_color"
-      mkdir ./datastore
-      chmod og+w ./datastore
     fi
-
     # ========= Temporary Issue workaround =========
     echo "$fg[cyan] $(bstimestamp) [bs build] Downgrading pip to v1.5.6 (Temporary issue workaround) $reset_color"
     pip install pip==1.5.6
@@ -402,7 +419,7 @@ bsRebuild () {
   
     echo "$fg[cyan] $(bstimestamp) [bs build] Installing/Updating dependencies $reset_color"
     git submodule update --init
-    env CFLAGS="-Qunused-arguments" CPPFLAGS="-Qunused-arguments" pip install -Ur requirements_dev.txt
+    env CFLAGS="-Qunused-arguments" CPPFLAGS="-Qunused-arguments" pip install -r requirements_dev.txt
 
     # ========= Temporary Issue workaround =========
     echo "$fg[cyan] $(bstimestamp) [bs build] Downgrading pip to v1.5.6 (Temporary issue workaround) $reset_color"
@@ -416,17 +433,22 @@ bsRebuild () {
       ant full
     fi
 
-    echo "$fg[cyan] $(bstimestamp) [bs build] Running erase/reset script $reset_color"
-    echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
-
-    if [[ $FlagDatastoreRestore == true ]]; then
+    if [[ $useDataStoreRestore == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] Restoring Datastore image to $DSRestore $reset_color"
       dsRestore $DSRestore
       if [[ $? == 11 ]]; then
+        echo "$fg[cyan] $(bstimestamp) [bs build] Unable to restore Datastore image.  Running erase/reset script $reset_color"
+        echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
         bsEraseReset      
       fi
+    elif [[ $FlagDatastoreReset == true ]]; then
+      echo "$fg[cyan] $(bstimestamp) [bs build] Running erase/reset script $reset_color"
+      echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
+      bsEraseReset
     else
-      bsEraseReset      
+      echo "$fg[cyan] $(bstimestamp) [bs build] Restoring Master datastore"
+      #dsRestore "Master Datastore"
+      dsRestore
     fi
 
   else 
@@ -460,10 +482,10 @@ bsRebuild () {
     fi
 
     # Link Doc-viewer
-    installMe=false
+    installMe=true
     if [[ $installMe == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] -- 'sky-docviewer/wf-js-document-viewer' via pip install -e (linkDocViewer())$reset_color"
-      bsviewerize
+      linkDocViewer
     fi
 
     # Viewerize
@@ -501,15 +523,30 @@ bsRebuild () {
     if [[ $installMe == true ]]; then
       echo "$fg[cyan] $(bstimestamp) [bs build] -- 'w-annotation-js' via static file copy (copyStaticAnnotationFile())$reset_color"
       copyStaticAnnotationFile
-      gtsky
+      workon $baseVenv
     fi
   fi
 
   echo "$fg[green]====================================="
   echo "    === BigSky Build Complete ==="
   echo "=====================================$reset_color"
+  if [[ $useAlert == true ]]; then
+    alert "Build complete" 
+  else
+    say "Build complete"
+  fi
 
   if [[ $FlagRunBigSky == true ]]; then
+    bsRunServer
+  fi
+}
+
+killBS () {
+  for PID in $(ps -A -v | grep "manage.py" | awk '{print $1}');
+  do
+    kill -9 $PID &> /dev/null
+  done
+  if [[ $1 == "--run" ]]; then
     bsRunServer
   fi
 }
@@ -565,7 +602,7 @@ rebuildSubRepo () {
     pip install pip==1.5.6
     # ========= Temporary Issue workaround =========    
     env CFLAGS="-Qunused-arguments" CPPFLAGS="-Qunused-arguments" 
-    pip install -Ur requirements_dev.txt
+    pip install -r requirements_dev.txt
     rm -rf external_libs
     ant link-libs
 
@@ -626,14 +663,14 @@ isBigskyRunning () {
 copyStaticBigSkyFiles() {
   cp settingslocal.py $BSVAR__BKDIR
   cp build-user.properties $BSVAR__BKDIR
-  cp tools/bulkdata/accounts.csv $BSVAR__BKDIR
+  #cp tools/bulkdata/accounts.csv $BSVAR__BKDIR
 }
 
 
 replaceStaticBigSkyFiles() {
   cp $BSVAR__BKDIR"settingslocal.py" $PWD
   cp $BSVAR__BKDIR"build-user.properties" $PWD
-  cp $BSVAR__BKDIR"accounts.csv" $PWD"/tools/bulkdata/"
+  #cp $BSVAR__BKDIR"accounts.csv" $PWD"/tools/bulkdata/"
 }
 
 bsResetData () {
@@ -656,7 +693,8 @@ bsEraseReset() {
         enable_doc_viewer, \
         enable_charts, \
         enable_two_column, \
-        enable_risk,enable_csr, \
+        enable_risk, \
+        enable_csr, \
         enable_books_viewer_comments, \
         enable_books_viewer_shared_comments, \
         enable_table_bullets, \
@@ -674,19 +712,121 @@ gtsky () {
 function bsRunServer() {
   gtsky
   ./manage.py runserver 0.0.0.0:8001
+  # dev_appserver.py --port=8001 --datastore_path='/Users/stephenbush/Documents/Programming Environment Stuff/datastore/django_dev~big-sky.datastore' .
 }
 
+function rebuild() {
+
+  # Helper function for printing a timestamp in status messages
+  function bstimestamp() {
+    echo $(date -j "+[%H:%M:%S]")
+  }
+
+  which -s alert &> /dev/null && local useAlert=true  
+  which -s check_virtualenv &> /dev/null &&
+  which -s activate_virtualenv &> /dev/null || {
+    echo "$fg[red]Unable to rebuild; Missing dependency 'check_virtualenv'"
+    return
+  }
+  local VENV=$(check_virtualenv)
+
+  if [[ -d bower_components ]]; then
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Removing bower_components$reset_color"
+    rm -rf bower_components/
+  fi
+
+  # If there's a venv, re-create it
+  if [[ $1 == "-f" && $VENV != "" ]]; then
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Re-create VirtualEnvironment$reset_color"
+    deactivate
+    rmvirtualenv $VENV
+    rm -rf "$WORKON_HOME/$VENV/"
+    mkvirtualenv $VENV -a $PWD
+  fi
+  activate_virtualenv
+
+  git submodule update
+
+  if [[ -e Makefile ]]; then
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running make install$reset_color"
+    make install
+  fi
+  if [[ -e bower.json ]]; then  
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running bower install$reset_color"
+    bower install
+  fi
+  if [[ -e package.json ]]; then  
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running npm install$reset_color"
+    npm install
+  fi
+  if [[ -e requirements.txt ]]; then  
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running pip install$reset_color"
+    pip install -e .
+  fi
+  if [[ -e Gruntfile.js ]]; then  
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Grunt$reset_color"
+    grunt
+  fi
+  if [[ -e gulpfile.js ]]; then  
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Gulp$reset_color"
+    gulp
+  fi
+
+  echo "$fg[green]====================================="
+  echo "        === Build Complete ==="
+  echo "=====================================$reset_color"
+  if [[ $useAlert == true ]]; then
+    alert "Rebuild complete" "$PWD"
+  else
+    say "Rebuild complete"
+  fi  
+}
 
 
 
 # ==============================================================================
 # Repo link aliases/scripts
 
+updateBigskyWithBranch() {
+  Egg=$1
+  Repo=$2
+  Branch=$3
+  if [[ $Egg == "" || $Repo == "" || $Branch == "" ]]; then
+    echo "$fg[red]Error, this command requires at least 3 arguments (Module name, Repository name, Branch/Tag name, [Fork name]).$reset_color"
+    return
+  fi
+  Fork=$4
+  if [[ $Fork == "" ]]; then
+    Fork='Workiva'
+  fi
+
+  # Replace with constructed Github target link
+  REPLACE_WITH="git\+ssh:\/\/git\@github.com\/$Fork\/$Repo.git\@$Branch\#egg\=$Egg"
+
+  # Github target form (Replace first so it doesnt write twice)
+  REPLACE_REGEX1="git\+ssh:\/\/git\@github.com\/[\w,\_,\-]*\/$Repo.git\@[\w,\_,\-]*\#egg\=$Egg"
+  perl -pi -w -e "s/${REPLACE_REGEX1}/${REPLACE_WITH}/g;" requirements.txt
+
+  # Pip module form
+  REPLACE_REGEX2="$Egg==[\d]*.[\d]*.[\d]*"
+  perl -pi -w -e "s/${REPLACE_REGEX2}/${REPLACE_WITH}/g;" requirements.txt
+}
+updateBigskyWithDocviewerBranch() {
+  updateBigskyWithBranch sky-docviewer wf-js-document-viewer ${@:1}
+}
+
+
+
 copyStaticAnnotationFile () {
   cd "$BSVAR__Root_Workspace_Directory"w-annotation-js
   gulp build dist
   cp dist/w-annotation.js ../bigsky/static/js/annotation/w-annotation_1.js
 }
+
+function unpip () {
+  pip uninstall -y ${@:1}
+}
+
 
 # (From Tim McCall) Link in the viewers and stuff
 alias bsviewerize=" 
@@ -707,8 +847,8 @@ alias blv="bower link wf-js-viewer"
 
 # (From Pat Kujawa) Link in the viewers and stuff
 alias bspipssc="
-  pip freeze | grep wd-sdk | read wfsdk &&
-  bsrepip server-composition server-composition &&
+  pip freeze | grep wf-sdk | read wfsdk &&
+  bsrepip server-composition server_composition &&
   pip install $wfsdk
 "
 
@@ -717,25 +857,42 @@ function bsrepip() {
   pipName=${1?"First arg needs to be the pip name of the lib"}
   # if none supplied, default to $1
   folderName=${2:-$pipName}
-  workon sky &&
   pip uninstall -y $pipName &&
   pip install -e "../$folderName" &&
   ant link-libs
 }
 
-alias linkDocViewer="
-  pip uninstall -y sky-docviewer &&
-  pip install -e ../wf-js-document-viewer &&
-  ant link-libs &&
-  ant link-doc-viewer &&
-  ./tools/link_assets.py sky.docviewer assets
-"
+function linkSSC() {
+  pip freeze | grep wf-sdk | read wfsdk
+  pip uninstall -y server_composition
+  pip uninstall -y server_composition
+  pip install -e ../server_composition
+  ant link-libs
+  if [[ $wfsdk != "" ]]; then
+    pip install $wfsdk
+  else
+    echo "$fg[red]Error, could not detect version of wfsdk$reset_color"
+  fi
+}
 
-alias liBooks="
+function linkDocViewer() {
+  pip uninstall -y sky-docviewer
+  pip uninstall -y sky-docviewer
+  pip install -e ../wf-js-document-viewer
+  ant link-libs
+  ant link-doc-viewer
+  ./tools/link_assets.py sky.docviewer assets
+}
+
+alias linkBooks="
   bsrepip wf-books books &&
   ant generate-media &&
   ant link-libs &&
   ant link-books
+"
+
+alias linkAnnotationServices="
+  bsrepip wf-annotation-services
 "
 
 
@@ -759,7 +916,7 @@ dsBackup () {
 
   # Check to see whether Bigsky is currently running
   if [[ $BSVAR__Allow_Datastore_Imaging_When_Server_Running == false && $(isBigskyRunning) == true ]]; then
-    echo "${CRED}Error, cannot execute this function while BigSky server is running.$reset_color"
+    echo "$fg[red]Error, cannot execute this function while BigSky server is running.$reset_color"
     return 10
   fi
 
@@ -780,8 +937,8 @@ dsBackup () {
   fi
   mkdir $BSVAR__BKDIR"Datastore Images/$ImageName/"
 
-  if [[ -d datastore ]]; then
-    cp -R datastore $BSVAR__BKDIR"/Datastore Images/$ImageName/datastore"
+  if [[ -d $BSVAR__Datastore_Directory ]]; then
+    cp -R $BSVAR__Datastore_Directory $BSVAR__BKDIR"/Datastore Images/$ImageName/datastore"
   fi
 }
 
@@ -798,7 +955,7 @@ dsRestore () {
 
   # Check to see whether Bigsky is currently running
   if [[ $BSVAR__Allow_Datastore_Imaging_When_Server_Running == false && $(isBigskyRunning) == true ]]; then
-    echo "${CRED}Error, cannot execute this function while BigSky server is running.$reset_color"
+    echo "$fg[red]Error, cannot execute this function while BigSky server is running.$reset_color"
     return 10
   fi
 
@@ -809,10 +966,23 @@ dsRestore () {
     return 11
   fi
 
-  if [[ -d datastore ]]; then
-    rm -rf datastore
+  if [[ -d $BSVAR__Datastore_Directory ]]; then
+    rm -rf $BSVAR__Datastore_Directory
   fi
-  cp -R $BSVAR__BKDIR"Datastore Images/$ImageName/datastore/" datastore
+  cp -R $BSVAR__BKDIR"Datastore Images/$ImageName/datastore/" $BSVAR__Datastore_Directory
 }
 # ==============================================================================
 
+
+buildBSDeployPRForDVBranch() {
+  local origin="timmccall-wf"
+  local Ticket=$(echo ${1} | cut -d"_" -f1)  
+  local branch="${Ticket}_DEPLOY"
+  git branch $branch
+  git checkout $branch
+  updateBigskyWithDocviewerBranch $1
+  perl -pi -w -e "s/ant ci-release/ant ci-test-release/g;" smithy.yml
+  git commit -am "Deploy Only"
+  git push origin $branch
+  open "https://github.com/${origin}/bigsky/compare/master...${origin}:${branch}?expand=1"
+}

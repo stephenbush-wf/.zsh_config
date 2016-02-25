@@ -53,6 +53,24 @@ alias l="ls -1 -lah"
 
 alias runPassageway="/Applications/runscope-passageway --bucket=4k0snp2zbost --fixed 8001"
 
+function alert() {
+  Title="$1"
+  Msg="$2"
+  say "$Title"
+  osascript -e "display notification \"$Msg\" sound name \"Ping.aiff\" with title \"$Title\" "  # Mac notification system
+}
+
+function printWithTimestamp() {
+  echo "$(timestamp) ${@:1}"
+}
+
+function timestamp() {
+  if [[ $1 == '-d' ]]; then
+    echo $(date -j "+[%Y-%m-%d %H:%M:%S]")
+  else
+    echo $(date -j "+[%H:%M:%S]")
+  fi
+}
 
 
 
@@ -155,10 +173,10 @@ dockerReboot () {
   export DOCKER_CERT_PATH=/Users/stephenbush/.boot2docker/certs/boot2docker-vm
   export DOCKER_TLS_VERIFY=1
 
-  docker login docker.webfilings.org --username="stephenbush-wf" --password="d60d1deb7b" --email="stephen.bush@workiva.com"
+  #docker login docker.webfilings.org --username="stephenbush-wf" --password="d60d1deb7b" --email="stephen.bush@workiva.com"
   # Use --insecure-registry ??
 
-  dockerUpdate $1 $2
+  # dockerUpdate $1 $2
 }
 
 dockerUpdate() {
