@@ -7,8 +7,6 @@
 # Directory of the workspace where all your Workiva repositories live
 BSVAR__Root_Workspace_Directory='/Users/stephenbush/workspaces/wf/'
 BSVAR__Temp_Bigsky_Workspace_Directory="$BSVAR__Root_Workspace_Directory""bigsky/"
-# BSVAR__Datastore_Directory="BSVAR__Temp_Bigsky_Workspace_Directory""datastore/"
-BSVAR__Datastore_Directory='/Users/stephenbush/Documents/Programming Environment Stuff/datastore/'
 # Directory into which to store backup files (Settings,data,etc)
 BSVAR__BKDIR='/Users/stephenbush/Documents/Programming Environment Stuff/bigsky Backup Files/'
 # Github URL for the main Bigsky development fork used by you or your team
@@ -32,6 +30,8 @@ BSVAR__Run_Git_Garbage_Collection=false
 # ======================================================
 #   Datastore Management Config
 # ======================================================
+# BSVAR__Datastore_Directory="BSVAR__Temp_Bigsky_Workspace_Directory""datastore/"
+BSVAR__Datastore_Directory='/Users/stephenbush/Documents/Programming Environment Stuff/datastore/'
 # Flag to allow/disallow the Datastore scripts from running while BigSky is running
 # Recommended false, because the datastore files are somewhat volatile and some elements 
 #   may not be saved until after the server is properly shut down.
