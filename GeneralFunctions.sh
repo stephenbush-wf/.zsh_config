@@ -28,6 +28,8 @@ function getBaseDir() {
   return 0
 }
 
+function abs_path() { (cd "$1" &>/dev/null && echo "$(pwd -P)") }
+
 # Show/Hide hidden files and folders in the Finder
 alias finderShowHiddenFiles="defaults write com.apple.finder AppleShowAllFiles YES"
 alias finderHideHiddenFiles="defaults write com.apple.finder AppleShowAllFiles NO"
@@ -56,8 +58,8 @@ alias runPassageway="/Applications/runscope-passageway --bucket=4k0snp2zbost --f
 function alert() {
   Title="$1"
   Msg="$2"
-  say "$Title"
   osascript -e "display notification \"$Msg\" sound name \"Ping.aiff\" with title \"$Title\" "  # Mac notification system
+  say "$Title"
 }
 
 function printWithTimestamp() {
@@ -72,9 +74,87 @@ function timestamp() {
   fi
 }
 
+# NOT WORKING
+function rand() {
+  local rnd=$RANDOM
+  #RANDOM=$rnd
+  #echo "<< $RANDOM $rnd >>"
+  if [[ $1 == '' || $2 == '' ]]; then
+    echo $rnd
+  else
+    local Range=$(($2 - $1))
+    local Scaled=$(($rnd * Range / 32768))
+    echo $(($1+Scaled))
+  fi
+}
+function randScaled() {
+  if [[ $1 == '' || $2 == '' || $3 == '' ]]; then
+    # Error msg!
+    return 10;
+  else
+    local rnd=$3
+    local Range=$(($2 - $1))
+    local Scaled=$(($rnd * Range / 32768))
+    echo $(($1+Scaled))
+  fi
+}
 
+function lrencode() {
+  if [[ $1 == '' ]]; then
+    # Error msg!
+    return 10;
+  fi
+  local randomized=false
+  if [[ $2 == '-r' ]]; then
+    randomized=true
+  fi
 
+  local String=$1
+  local Index=0
+  local Length=${#String}
+  local fbSwitch=0
+  local Output=''
+  local rnd=0
+  while [[ $Index -lt $Length ]]; do
+    local char=${String:$Index:1}
+    rnd=$RANDOM
+    rnd=`randScaled 0 10 $rnd`
+    if [[ $randomized == false || ( $randomized == true && $rnd -lt 3 ) ]]; then
+      if [[ $fbSwitch == 0 ]]; then
+        Output="$Output""‮"
+      else
+        Output="$Output""‭"
+      fi
+      fbSwitch=$((1-fbSwitch))
+    fi
 
+    Output="$Output""$char"
+    Index=$((Index+1))
+  done
+  echo -n $Output | pbcopy
+  echo $Output
+}
+
+# Modified, originally from http://superuser.com/questions/611538/is-there-a-way-to-display-a-countdown-or-stopwatch-timer-in-a-terminal
+function bgCountdown() {
+  countdown ${@:1} &
+}
+function countdown(){
+   date1=$((`date +%s` + $1)); 
+   # echo $date1
+   while [ "$date1" -ge `date +%s` ]; do 
+     # echo -ne "$(date -u -date @$(($date1 - `date +%s`)) +%H:%M:%S)\r";
+     sleep 0.1
+   done
+   alert ${@:2}
+}
+function stopwatch(){
+  date1=`date +%s`; 
+   while true; do 
+    echo -ne "$(date -u -date @$((`date +%s` - $date1)) +%H:%M:%S)\r"; 
+    sleep 0.1
+   done
+}
 
 # ==============================================================================
 # ZSH Extensions
@@ -205,4 +285,14 @@ dockerUpdate() {
 
 function runTests() {
   runTerminalFunction runTests
+}
+
+
+function forceKillAll () {
+	local Target=$1
+	for PID in $(ps -A -v | grep $Target | awk '{print $1}')
+	do
+		print Killing PID $PID
+		kill -9 $PID &> /dev/null
+	done
 }

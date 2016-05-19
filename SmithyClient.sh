@@ -5,6 +5,8 @@
 # Useful Smithy Extensions/Aliases using the Workiva Smithy Client:
 #     https://github.com/Workiva/smithy-client
 
+export PATH=smithy:$PATH
+
 
 # Smithy helpers by Pat Kujawa, updated 2015-Oct-6
 # Uses https://github.com/Workiva/smithy-client

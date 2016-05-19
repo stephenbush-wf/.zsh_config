@@ -252,7 +252,7 @@ bsRebuild () {
       # Parse extra param
       CurParamNum=$(($CurParamNum+1))
       eval "DSRestore=\$$CurParamNum"
-      if [[ $DSRestore == "" || $DSRestore =~ '^-.*' ]] then
+      if [[ $DSRestore == "" || $DSRestore =~ '^-.*' ]]; then
         echo "$fg[red] $(bstimestamp) [bs build] ERROR: This command requires at least one argument following the -D parameter! (Backup name)  See 'bsRebuild --help' for more details.$reset_color"
         return 11
       fi
@@ -445,7 +445,7 @@ bsRebuild () {
       # echo "$fg[cyan] $(bstimestamp) [bs build] ** Make sure the Python erase_reset_data.py script arguments match your user login credentials in ./tools/bulkdata/accounts.csv, or you may have problems running BigSky! $reset_color"
       bsResetData
     fi
-    gco 'tools/bulkdata/accounts.csv'
+    git checkout 'tools/bulkdata/accounts.csv'
 
   else 
     if [[ $FlagBranch == true ]]; then
@@ -619,46 +619,68 @@ function rebuild() {
   }
 
 
-  which -s check_virtualenv &> /dev/null &&
-  which -s activate_virtualenv &> /dev/null || {
-    echo "$fg[red]Unable to rebuild; Missing dependency 'check_virtualenv'"
-    return
-  }
-  local VENV=$(check_virtualenv)
-
-  if [[ -d bower_components ]]; then
-    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Removing bower_components$reset_color"
-    rm -rf bower_components/
-  fi
 
   # If there's a venv, re-create it
-  if [[ $1 == "-f" && $VENV != "" ]]; then
-    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Re-create VirtualEnvironment$reset_color"
-    deactivate
-    rmvirtualenv $VENV
-    rm -rf "$WORKON_HOME/$VENV/"
-    mkvirtualenv $VENV -a $PWD
+  if [[ $1 == "-f" ]]; then
+    which -s check_virtualenv &> /dev/null &&
+    which -s activate_virtualenv &> /dev/null || {
+      echo "$fg[red]Unable to rebuild; Missing dependency 'check_virtualenv'"
+      return
+    }
+    local VENV=$(check_virtualenv)
+
+    if [[ $VENV != "" ]]; then
+      echo "$fg[cyan] $(bstimestamp) [rebuild] -- Re-create VirtualEnvironment$reset_color"
+      deactivate
+      rmvirtualenv $VENV
+      rm -rf "$WORKON_HOME/$VENV/"
+      mkvirtualenv $VENV -a $PWD
+    fi
   fi
+  local FlagSkip=false
+  if [[ $1 == "-s" ]]; then
+    FlagSkip=true
+  fi
+
   activate_virtualenv
 
   git submodule update
 
-  if [[ -e Makefile ]]; then
-    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running make install$reset_color"
-    make install
-  fi
+  # Pull Deps
   if [[ -e bower.json ]]; then  
     echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running bower install$reset_color"
+    # if [[ $FlagSkip == false ]]; then
+    #   rm -rf bower_components/    
+    # fi
+    bower prune
     bower install
   fi
   if [[ -e package.json ]]; then  
     echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running npm install$reset_color"
+    # if [[ $FlagSkip == false ]]; then
+    #   rm -rf node_modules/
+    # fi
+    npm prune
     npm install
   fi
   if [[ -e requirements.txt ]]; then  
     echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running pip install$reset_color"
     pip install -e .
   fi
+  if [[ -e pubspec.yaml ]]; then  
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running pub get$reset_color"
+    pub get
+  fi
+
+
+  # Pull Deps And/Or Compile & Build
+  if [[ -e Makefile ]]; then
+    echo "$fg[cyan] $(bstimestamp) [rebuild] -- Running make install$reset_color"
+    make install
+  fi
+
+
+  # Compile & Build
   if [[ -e Gruntfile.js ]]; then  
     echo "$fg[cyan] $(bstimestamp) [rebuild] -- Grunt$reset_color"
     grunt
