@@ -136,10 +136,10 @@ function lrencode() {
 }
 
 # Modified, originally from http://superuser.com/questions/611538/is-there-a-way-to-display-a-countdown-or-stopwatch-timer-in-a-terminal
-function bgCountdown() {
+function settimer() {
   countdown ${@:1} &
 }
-function countdown(){
+function countdown() {
    date1=$((`date +%s` + $1)); 
    # echo $date1
    while [ "$date1" -ge `date +%s` ]; do 
@@ -148,12 +148,28 @@ function countdown(){
    done
    alert ${@:2}
 }
-function stopwatch(){
+function stopwatch() {
   date1=`date +%s`; 
    while true; do 
     echo -ne "$(date -u -date @$((`date +%s` - $date1)) +%H:%M:%S)\r"; 
     sleep 0.1
    done
+}
+
+function waitFor() {
+  while true; do
+    local pCount=`ps -ax | grep $1 -c`
+    # Less than 4 because when the terminal is idle, it's expected that these processes:
+    #   * login -fp stephenbush
+    #   * -zsh
+    #   * grep (the process for the grep command below querying about the target terminal will always find itself)
+    # will always be found, so any process count of 4 or more indicates the terminal is non-idle.
+    # Wait until the terminal is idle, then break.
+    if [[ $pCount -lt 4 ]]; then
+      break
+    fi
+    sleep 0.2
+  done
 }
 
 # ==============================================================================
